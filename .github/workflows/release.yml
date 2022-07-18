@@ -100,7 +100,7 @@ jobs:
       - name: Build and publish artifacts
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: assemble publishToSonatype closeAndReleaseSonatypeStagingRepository
+          arguments: assemble
         env:
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_KEY: ${{ secrets.SONATYPE_KEY }}
@@ -118,7 +118,7 @@ jobs:
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
         with:
           # Don't use publishToSonatype since we don't want to publish the marker artifact
-          arguments: build publishPlugins publishPluginMavenPublicationToSonatypeRepository closeAndReleaseSonatypeStagingRepository
+          arguments: build
           build-root-directory: gradle-plugins
 
       - name: Generate release notes
