@@ -5,24 +5,12 @@
 
 package io.opentelemetry.javaagent.tooling.config;
 
-import io.opentelemetry.instrumentation.api.config.Config;
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 
 public final class AgentConfig {
 
-  private static final AgentConfig instance = new AgentConfig(Config.get());
-
-  private final Config config;
-
-  public static AgentConfig get() {
-    return instance;
-  }
-
-  public AgentConfig(Config config) {
-    this.config = config;
-  }
-
-  public boolean isInstrumentationEnabled(
-      Iterable<String> instrumentationNames, boolean defaultEnabled) {
+  public static boolean isInstrumentationEnabled(
+      ConfigProperties config, Iterable<String> instrumentationNames, boolean defaultEnabled) {
     // If default is enabled, we want to enable individually,
     // if default is disabled, we want to disable individually.
     boolean anyEnabled = defaultEnabled;
@@ -39,7 +27,7 @@ public final class AgentConfig {
     return anyEnabled;
   }
 
-  public boolean isDebugModeEnabled() {
+  public static boolean isDebugModeEnabled(ConfigProperties config) {
     String heliosDebugEnv = System.getenv("HS_DEBUG");
 
     if (heliosDebugEnv != null && Boolean.parseBoolean(heliosDebugEnv)) {
@@ -47,4 +35,6 @@ public final class AgentConfig {
     }
     return config.getBoolean("otel.javaagent.debug", false);
   }
+
+  private AgentConfig() {}
 }
