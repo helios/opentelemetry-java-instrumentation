@@ -24,8 +24,8 @@ jobs:
   gradle-plugins:
     uses: ./.github/workflows/reusable-gradle-plugins.yml
 
-  examples:
-    uses: ./.github/workflows/reusable-examples.yml
+#  examples:
+#    uses: ./.github/workflows/reusable-examples.yml
 
   release:
     needs:
@@ -33,7 +33,7 @@ jobs:
 #      - test
 #      - smoke-test
       - gradle-plugins
-      - examples
+#      - examples
     outputs:
       version: ${{ steps.create-github-release.outputs.version }}
     runs-on: ubuntu-latest
