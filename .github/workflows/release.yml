@@ -172,7 +172,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp javaagent/build/libs/opentelemetry-javaagent-${VERSION}.jar opentelemetry-javaagent.jar
+          ls -l javaagent/
+          ls -l javaagent/build
+          ls -l javaagent/build/libs
+          cp javaagent/build/libs/opentelemetry-javaagent-${VERSION}-SNAPSHOT.jar opentelemetry-javaagent.jar
           gh release create --target $GITHUB_REF_NAME \
                             --title "Version $VERSION" \
                             --notes-file /tmp/release-notes.txt \
