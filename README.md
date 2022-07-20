@@ -174,3 +174,5 @@ To Build locally use:
 `
 
 After building, you should be able to see the updated agent jar under `javaagent/build/libs`
+
+In order to release a new version please update the following file: `version.gradle.kts`
