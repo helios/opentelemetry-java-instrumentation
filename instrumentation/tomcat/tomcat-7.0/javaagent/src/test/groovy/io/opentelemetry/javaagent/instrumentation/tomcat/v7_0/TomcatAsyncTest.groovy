@@ -10,7 +10,6 @@ import io.opentelemetry.instrumentation.test.AgentTestTrait
 import io.opentelemetry.instrumentation.test.asserts.TraceAssert
 import io.opentelemetry.instrumentation.test.base.HttpServerTest
 import io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint
-import io.opentelemetry.semconv.trace.attributes.SemanticAttributes
 import org.apache.catalina.Context
 import org.apache.catalina.startup.Tomcat
 import org.apache.tomcat.JarScanFilter
