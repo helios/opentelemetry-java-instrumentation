@@ -622,9 +622,8 @@ public abstract class AbstractHttpServerTest<SERVER> {
           }
 
           if (httpAttributes.contains(AttributeKey.stringKey("http.request.headers"))) {
-              assertThat(attrs).containsKey("http.request.headers");
+            assertThat(attrs).containsKey("http.request.headers");
           }
-
 
           if (endpoint == CAPTURE_HEADERS) {
             assertThat(attrs)
