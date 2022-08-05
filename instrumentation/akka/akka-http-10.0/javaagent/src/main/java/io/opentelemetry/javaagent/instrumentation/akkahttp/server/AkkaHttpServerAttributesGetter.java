@@ -30,33 +30,21 @@ class AkkaHttpServerAttributesGetter
   }
 
   @Override
-  @Nullable
-  public String requestHeaders(HttpRequest request, HttpResponse unused) {
-    return AkkaHttpUtil.toJsonString(
-        JavaConverters.seqAsJavaListConverter(request.headers()).asJava().stream()
-            .collect(Collectors.toMap(HttpHeader::name, HttpHeader::value)));
-  }
-
-  @Override
-  @Nullable
-  public Long requestContentLength(HttpRequest request, @Nullable HttpResponse httpResponse) {
-    return null;
-  }
-
-  @Override
   public Integer statusCode(HttpRequest request, HttpResponse httpResponse) {
     return httpResponse.status().intValue();
   }
 
   @Override
-  @Nullable
-  public Long responseContentLength(HttpRequest request, HttpResponse httpResponse) {
-    return null;
+  public List<String> responseHeader(HttpRequest request, HttpResponse httpResponse, String name) {
+    return AkkaHttpUtil.responseHeader(httpResponse, name);
   }
 
   @Override
-  public List<String> responseHeader(HttpRequest request, HttpResponse httpResponse, String name) {
-    return AkkaHttpUtil.responseHeader(httpResponse, name);
+  @Nullable
+  public String requestHeaders(HttpRequest request, HttpResponse unused) {
+    return AkkaHttpUtil.toJsonString(
+        JavaConverters.seqAsJavaListConverter(request.headers()).asJava().stream()
+            .collect(Collectors.toMap(HttpHeader::name, HttpHeader::value)));
   }
 
   @Override
