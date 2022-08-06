@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.tomcat.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
@@ -73,12 +75,21 @@ public class TomcatHelper<REQUEST, RESPONSE> {
 
   public void attachRequestHeadersToSpan(Request request, Span span) {
     Map<String, String> requestHeaders = this.extractRequestHeaders(request);
-    span.setAttribute("http.request.headers", String.valueOf(requestHeaders));
+    span.setAttribute("http.request.headers", this.serializeToString(requestHeaders));
   }
 
   public void attachResponseHeadersToSpan(Response response, Span span) {
     Map<String, String> responseHeaders = this.extractResponseHeaders(response);
-    span.setAttribute("http.response.headers", String.valueOf(responseHeaders));
+    span.setAttribute("http.response.headers", this.serializeToString(responseHeaders));
+  }
+
+  private String serializeToString(Map<String, String> headers) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      return objectMapper.writeValueAsString(headers);
+    } catch (JsonProcessingException e) {
+      return null;
+    }
   }
 
   private Map<String, String> extractRequestHeaders(Request request) {
