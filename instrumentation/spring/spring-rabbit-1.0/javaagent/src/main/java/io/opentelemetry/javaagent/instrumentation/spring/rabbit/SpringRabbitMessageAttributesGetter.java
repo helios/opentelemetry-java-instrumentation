@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.springframework.amqp.core.Message;
+import java.nio.charset.StandardCharsets;
 
 enum SpringRabbitMessageAttributesGetter implements MessagingAttributesGetter<Message, Void> {
   INSTANCE;
@@ -99,5 +100,11 @@ enum SpringRabbitMessageAttributesGetter implements MessagingAttributesGetter<Me
       return Collections.singletonList(value.toString());
     }
     return Collections.emptyList();
+  }
+
+  @Nullable
+  @Override
+  public String messagePayload(Message message) {
+    return new String(message.getBody(), StandardCharsets.UTF_8);
   }
 }

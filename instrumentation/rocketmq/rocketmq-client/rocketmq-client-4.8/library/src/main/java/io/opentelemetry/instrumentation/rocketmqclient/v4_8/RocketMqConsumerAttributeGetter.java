@@ -93,4 +93,10 @@ enum RocketMqConsumerAttributeGetter implements MessagingAttributesGetter<Messag
     }
     return Collections.emptyList();
   }
+
+  @Nullable
+  @Override
+  public String messagePayload(MessageExt messageExt) {
+    return new String(messageExt.getBody(), StandardCharsets.UTF_8);
+  }
 }
