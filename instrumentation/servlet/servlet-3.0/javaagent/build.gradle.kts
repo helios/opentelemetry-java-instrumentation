@@ -21,6 +21,8 @@ dependencies {
   bootstrap(project(":instrumentation:servlet:servlet-common:bootstrap"))
 
   compileOnly("javax.servlet:javax.servlet-api:3.0.1")
+  compileOnly("javax.servlet:javax.servlet-api:3.1.0")
+  compileOnly("org.apache.tomcat:catalina:6.0.53")
 
   testInstrumentation(project(":instrumentation:jetty:jetty-8.0:javaagent"))
 

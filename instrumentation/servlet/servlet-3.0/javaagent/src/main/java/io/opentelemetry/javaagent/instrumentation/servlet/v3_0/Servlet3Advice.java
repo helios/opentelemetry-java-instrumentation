@@ -39,10 +39,13 @@ public class Servlet3Advice {
       return;
     }
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+    String body = Servlet3Singletons.getRequestBody(httpServletRequest);
+    System.out.println("body: " + body);
     callDepth = CallDepth.forClass(AppServerBridge.getCallDepthKey());
     callDepth.getAndIncrement();
 
     Context currentContext = Java8BytecodeBridge.currentContext();
+
     Context attachedContext = helper().getServerContext(httpServletRequest);
     Context contextToUpdate;
 
