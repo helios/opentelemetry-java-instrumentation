@@ -11,6 +11,7 @@ import static net.bytebuddy.matcher.ElementMatchers.isPublic;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.instrumentation.kafka.internal.KafkaPropagation;
@@ -23,6 +24,10 @@ import net.bytebuddy.matcher.ElementMatcher;
 import org.apache.kafka.clients.ApiVersions;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class KafkaProducerInstrumentation implements TypeInstrumentation {
 
@@ -59,6 +64,13 @@ public class KafkaProducerInstrumentation implements TypeInstrumentation {
       }
 
       context = producerInstrumenter().start(parentContext, record);
+      Span span = Span.fromContext(context);
+      span.setAttribute("messaging.payload", String.valueOf(record.value()));
+      Map<String, String> headers = new HashMap<>();
+      for (Header header : record.headers().toArray()) {
+        headers.put(header.key(), new String(header.value(), StandardCharsets.UTF_8));
+      }
+      span.setAttribute("messaging.kafka.headers", String.valueOf(headers));
       scope = context.makeCurrent();
 
       if (KafkaSingletons.isPropagationEnabled() && KafkaPropagation.shouldPropagate(apiVersions)) {

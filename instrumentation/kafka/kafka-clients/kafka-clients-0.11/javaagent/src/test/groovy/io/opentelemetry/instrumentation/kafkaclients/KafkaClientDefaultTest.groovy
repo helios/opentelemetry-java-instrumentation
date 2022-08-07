@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.kafkaclients
 
+import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.sdk.trace.data.SpanData
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -63,6 +64,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             "$SemanticAttributes.MESSAGING_SYSTEM" "kafka"
             "$SemanticAttributes.MESSAGING_DESTINATION" SHARED_TOPIC
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "topic"
+            AttributeKey.stringKey("messaging.payload") "Hello Kafka!"
           }
         }
         span(2) {
