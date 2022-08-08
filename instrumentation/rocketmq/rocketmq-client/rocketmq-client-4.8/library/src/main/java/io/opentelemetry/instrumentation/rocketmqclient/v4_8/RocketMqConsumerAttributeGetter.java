@@ -10,6 +10,7 @@ import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.apache.rocketmq.common.message.MessageExt;
 
