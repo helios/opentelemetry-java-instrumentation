@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.springframework.amqp.core.Message;
-import java.nio.charset.StandardCharsets;
 
 enum SpringRabbitMessageAttributesGetter implements MessagingAttributesGetter<Message, Void> {
   INSTANCE;
