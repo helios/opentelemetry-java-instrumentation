@@ -100,6 +100,7 @@ enum RabbitDeliveryAttributesGetter implements MessagingAttributesGetter<Deliver
     return null;
   }
 
+
   @Override
   public List<String> header(DeliveryRequest request, String name) {
     Object value = request.getProperties().getHeaders().get(name);
