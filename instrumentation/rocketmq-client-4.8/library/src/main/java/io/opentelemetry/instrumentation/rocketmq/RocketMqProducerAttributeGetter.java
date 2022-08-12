@@ -8,6 +8,8 @@ package io.opentelemetry.instrumentation.rocketmq;
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.rocketmq.client.hook.SendMessageContext;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -96,5 +98,14 @@ enum RocketMqProducerAttributeGetter
     }
 
     return new String(body, StandardCharsets.UTF_8);
+  }
+
+  @Override
+  public List<String> header(SendMessageContext request, String name) {
+    String value = request.getMessage().getProperties().get(name);
+    if (value != null) {
+      return Collections.singletonList(value);
+    }
+    return Collections.emptyList();
   }
 }

@@ -7,6 +7,7 @@ package io.opentelemetry.instrumentation.kafkaclients
 
 import io.opentelemetry.instrumentation.test.LibraryTestTrait
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes
+import java.nio.charset.StandardCharsets
 import org.apache.kafka.clients.producer.ProducerRecord
 import spock.lang.Unroll
 
@@ -15,21 +16,27 @@ import java.time.Duration
 import static io.opentelemetry.api.trace.SpanKind.CONSUMER
 import static io.opentelemetry.api.trace.SpanKind.INTERNAL
 import static io.opentelemetry.api.trace.SpanKind.PRODUCER
+import static java.util.Collections.singletonList
 
 class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
 
   @Unroll
-  def "test wrappers"() throws Exception {
+  def "test wrappers, test headers: #testHeaders"() throws Exception {
     KafkaTelemetry telemetry = KafkaTelemetry.builder(getOpenTelemetry())
-    // TODO run tests both with and without experimental span attributes
-            .setCaptureExperimentalSpanAttributes(true)
-            .build()
+      .setCapturedHeaders(singletonList("test-message-header"))
+      // TODO run tests both with and without experimental span attributes
+      .setCaptureExperimentalSpanAttributes(true)
+      .build()
 
     when:
     String greeting = "Hello Kafka!"
     def wrappedProducer = telemetry.wrap(producer)
     runWithSpan("parent") {
-      wrappedProducer.send(new ProducerRecord(SHARED_TOPIC, greeting)) { meta, ex ->
+      def producerRecord = new ProducerRecord(SHARED_TOPIC, greeting)
+      if (testHeaders) {
+        producerRecord.headers().add("test-message-header", "test".getBytes(StandardCharsets.UTF_8))
+      }
+      wrappedProducer.send(producerRecord) { meta, ex ->
         if (ex == null) {
           runWithSpan("producer callback") {}
         } else {
@@ -66,6 +73,9 @@ class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
             "$SemanticAttributes.MESSAGING_DESTINATION" SHARED_TOPIC
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "topic"
             "messaging.payload" greeting
+            if (testHeaders) {
+              "messaging.header.test_message_header" { it == ["test"] }
+            }
           }
         }
         span(2) {
@@ -82,6 +92,9 @@ class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" greeting
+            if (testHeaders) {
+              "messaging.header.test_message_header" { it == ["test"] }
+            }
           }
         }
         span(3) {
@@ -91,6 +104,9 @@ class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
         }
       }
     }
+
+    where:
+    testHeaders << [false, true]
   }
 }
 
