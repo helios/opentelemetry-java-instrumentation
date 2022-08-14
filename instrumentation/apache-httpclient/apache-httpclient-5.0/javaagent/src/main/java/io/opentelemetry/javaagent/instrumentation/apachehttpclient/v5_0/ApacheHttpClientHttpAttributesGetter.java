@@ -8,10 +8,13 @@ package io.opentelemetry.javaagent.instrumentation.apachehttpclient.v5_0;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpClientAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpRequest;
@@ -151,5 +154,21 @@ final class ApacheHttpClientHttpAttributesGetter
       headersList.add(header.getValue());
     }
     return headersList;
+  }
+
+  @Nullable
+  @Override
+  public String requestHeaders(HttpRequest httpRequest, @Nullable HttpResponse httpResponse) {
+    return String.valueOf(getHeaders(httpRequest.getHeaders()));
+  }
+
+  @Nullable
+  @Override
+  public String responseHeaders(HttpRequest httpRequest, HttpResponse httpResponse) {
+    return String.valueOf(getHeaders(httpResponse.getHeaders()));
+  }
+
+  private static Map<String, String> getHeaders(Header[] headers) {
+    return Arrays.stream(headers).collect(Collectors.toMap(Header::getName, Header::getValue));
   }
 }

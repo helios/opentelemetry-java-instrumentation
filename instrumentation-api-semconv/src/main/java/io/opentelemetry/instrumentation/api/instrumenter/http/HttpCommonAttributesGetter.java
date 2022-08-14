@@ -95,4 +95,14 @@ public interface HttpCommonAttributesGetter<REQUEST, RESPONSE> {
   default String responseHeaders(REQUEST request, RESPONSE response) {
     return null;
   }
+
+  @Nullable
+  default String requestBody(REQUEST request) {
+    return null;
+  }
+
+  @Nullable
+  default String responseBody(RESPONSE response) {
+    return null;
+  }
 }

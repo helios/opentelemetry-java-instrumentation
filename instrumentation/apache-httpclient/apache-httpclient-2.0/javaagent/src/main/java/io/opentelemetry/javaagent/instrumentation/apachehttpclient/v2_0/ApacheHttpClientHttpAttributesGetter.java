@@ -10,7 +10,10 @@ import static java.util.Collections.singletonList;
 
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpClientAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
@@ -113,5 +116,33 @@ final class ApacheHttpClientHttpAttributesGetter
       }
       return url.toString();
     }
+  }
+
+  @Nullable
+  @Override
+  public String requestHeaders(HttpMethod request, @Nullable HttpMethod response) {
+    return String.valueOf(getHeaders(request.getRequestHeaders()));
+  }
+
+  @Nullable
+  @Override
+  public String requestBody(HttpMethod request) {
+    return request.getResponseBodyAsString();
+  }
+
+  @Nullable
+  @Override
+  public String responseHeaders(HttpMethod request, HttpMethod response) {
+    return String.valueOf(getHeaders(response.getResponseHeaders()));
+  }
+
+  @Nullable
+  @Override
+  public String responseBody(HttpMethod response) {
+    return response.getResponseBodyAsString();
+  }
+
+  private static Map<String, String> getHeaders(Header[] headers) {
+    return Arrays.stream(headers).collect(Collectors.toMap(Header::getName, Header::getValue));
   }
 }

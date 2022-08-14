@@ -12,6 +12,8 @@ import io.opentelemetry.instrumentation.api.instrumenter.http.HttpClientAttribut
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 class HttpUrlHttpAttributesGetter
@@ -73,5 +75,27 @@ class HttpUrlHttpAttributesGetter
       HttpURLConnection connection, Integer statusCode, String name) {
     String value = connection.getHeaderField(name);
     return value == null ? emptyList() : singletonList(value);
+  }
+
+  @Nullable
+  @Override
+  public String responseHeaders(HttpURLConnection httpURLConnection, Integer integer) {
+    Map<String, List<String>> headers = httpURLConnection.getHeaderFields();
+    if (headers == null) {
+      return null;
+    }
+
+    return String.valueOf(headers);
+  }
+
+  @Nullable
+  @Override
+  public String requestHeaders(HttpURLConnection httpURLConnection, @Nullable Integer integer) {
+    Map<String, List<String>> headers = httpURLConnection.getRequestProperties();
+    if (headers == null) {
+      return null;
+    }
+
+    return String.valueOf(headers);
   }
 }

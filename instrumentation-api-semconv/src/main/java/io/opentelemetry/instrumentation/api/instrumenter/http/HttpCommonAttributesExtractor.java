@@ -12,6 +12,7 @@ import static io.opentelemetry.instrumentation.api.instrumenter.http.SemanticAtt
 import static io.opentelemetry.instrumentation.api.instrumenter.http.SemanticAttributes.HTTP_RESPONSE_HEADERS;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
@@ -73,6 +74,16 @@ abstract class HttpCommonAttributesExtractor<
         attributes,
         SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH_UNCOMPRESSED,
         getter.requestContentLengthUncompressed(request, response));
+    internalSet(
+        attributes,
+        AttributeKey.stringKey("http.request.body"),
+         getter.requestBody(request)
+    );
+    internalSet(
+        attributes,
+        AttributeKey.stringKey("http.response.body"),
+        getter.responseBody(response)
+    );
 
     if (response != null) {
       Integer statusCode = getter.statusCode(request, response);
