@@ -79,11 +79,11 @@ public class OpenTelemetryHandlerMappingFilter implements Filter, Ordered {
       return;
     }
 
-    ContentCachingResponseWrapper responseWrapper =
-        new ContentCachingResponseWrapper((HttpServletResponse) response);
+    org.springframework.web.servlet.ContentCachingResponseWrapper responseWrapper =
+        new org.springframework.web.servlet.ContentCachingResponseWrapper((HttpServletResponse) response);
 
-    ContentCachingRequestWrapper requestWrapper =
-        new ContentCachingRequestWrapper((HttpServletRequest) request);
+    org.springframework.web.servlet.ContentCachingRequestWrapper requestWrapper =
+        new org.springframework.web.servlet.ContentCachingRequestWrapper((HttpServletRequest) request);
 
     try {
       filterChain.doFilter(requestWrapper, responseWrapper);
@@ -98,8 +98,8 @@ public class OpenTelemetryHandlerMappingFilter implements Filter, Ordered {
   }
 
   private void setAttributes(
-      ContentCachingRequestWrapper requestWrapper,
-      ContentCachingResponseWrapper responseWrapper,
+      org.springframework.web.servlet.ContentCachingRequestWrapper requestWrapper,
+      org.springframework.web.servlet.ContentCachingResponseWrapper responseWrapper,
       Context context)
       throws IOException {
     Span span = Span.fromContext(context);
