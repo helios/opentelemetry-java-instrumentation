@@ -56,8 +56,7 @@ public class PubsubSingletons {
     SpanNameExtractor publisherSpanNameExtractor = o -> publisherSpanName;
 
     return Instrumenter.<PubsubMessage, Void>builder(
-            GlobalOpenTelemetry.get(), instrumentationName, publisherSpanNameExtractor)
-        .newInstrumenter(SpanKindExtractor.alwaysProducer());
+            GlobalOpenTelemetry.get(), instrumentationName, publisherSpanNameExtractor).buildProducerInstrumenter(PubSubAttributesMapSetter.INSTANCE);
   }
 
   public static Instrumenter<PubsubMessage, Void> createSubscriberInstrumenter() {
@@ -66,7 +65,7 @@ public class PubsubSingletons {
 
     return Instrumenter.<PubsubMessage, Void>builder(
             GlobalOpenTelemetry.get(), instrumentationName, subscriberSpanNameExtractor)
-        .newInstrumenter(SpanKindExtractor.alwaysConsumer());
+        .buildConsumerInstrumenter(PubSubAttributesMapGetter.INSTANCE);
   }
 
   public static void startAndInjectSpan(

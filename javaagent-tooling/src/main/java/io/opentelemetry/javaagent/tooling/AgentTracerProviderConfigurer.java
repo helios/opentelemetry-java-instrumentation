@@ -18,7 +18,6 @@ import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.metrics.SdkMeterProviderBuilder;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
-import java.util.Collections;
 import java.util.Optional;
 
 @AutoService(AutoConfigurationCustomizerProvider.class)

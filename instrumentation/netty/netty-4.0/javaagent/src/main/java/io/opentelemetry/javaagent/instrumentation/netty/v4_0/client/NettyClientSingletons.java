@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package io.opentelemetry.javaagent.instrumentation.netty.v4_0.client;
+package io.opentelemetry.javaagent.instrumentation.netty.v4_1;
 
 import io.netty.handler.codec.http.HttpResponse;
 import io.opentelemetry.api.GlobalOpenTelemetry;
@@ -45,7 +45,7 @@ public final class NettyClientSingletons {
     NettyClientInstrumenterFactory factory =
         new NettyClientInstrumenterFactory(
             GlobalOpenTelemetry.get(),
-            "io.opentelemetry.netty-4.0",
+            "io.opentelemetry.netty-4.1",
             connectionTelemetryEnabled,
             sslTelemetryEnabled,
             CommonConfig.get().getPeerServiceMapping());
