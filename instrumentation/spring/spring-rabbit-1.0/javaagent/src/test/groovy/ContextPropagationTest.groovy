@@ -7,6 +7,7 @@ import com.rabbitmq.client.ConnectionFactory
 import io.opentelemetry.instrumentation.test.AgentInstrumentationSpecification
 import io.opentelemetry.instrumentation.testing.GlobalTraceUtil
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes
+import org.springframework.amqp.AmqpException
 import org.springframework.amqp.core.AmqpTemplate
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessagePostProcessor
@@ -24,6 +25,7 @@ import spock.lang.Shared
 import java.time.Duration
 import spock.lang.Unroll
 
+import static com.google.common.net.InetAddresses.isInetAddress
 import static io.opentelemetry.api.trace.SpanKind.CLIENT
 import static io.opentelemetry.api.trace.SpanKind.CONSUMER
 import static io.opentelemetry.api.trace.SpanKind.PRODUCER
@@ -83,7 +85,7 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
           })
       } else {
         applicationContext.getBean(AmqpTemplate)
-          .convertAndSend(ConsumerConfig.TEST_QUEUE, "test")
+          .convertAndSend(ConsumerConfig.TEST_QUEUE, "test payload")
       }
     }
 
@@ -99,17 +101,17 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
           kind PRODUCER
           childOf span(0)
           attributes {
-            "net.sock.peer.addr" { it == "127.0.0.1" || it == null }
-            "net.sock.peer.port" Long
+            "$SemanticAttributes.NET_SOCK_PEER_ADDR" { it == "127.0.0.1" || it == null }
+            "$SemanticAttributes.NET_SOCK_PEER_PORT" Long
             "$SemanticAttributes.MESSAGING_SYSTEM" "rabbitmq"
             "$SemanticAttributes.MESSAGING_DESTINATION" "<default>"
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "queue"
             "$SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES" Long
             "$SemanticAttributes.MESSAGING_RABBITMQ_ROUTING_KEY" String
-            "messaging.payload" "test payload"
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" "test payload"
           }
         }
         // spring-cloud-stream-binder-rabbit listener puts all messages into a BlockingQueue immediately after receiving
@@ -160,8 +162,8 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
           name "basic.ack"
           kind CLIENT
           attributes {
-            "net.sock.peer.addr" { it == "127.0.0.1" || it == null }
-            "net.sock.peer.port" Long
+            "$SemanticAttributes.NET_SOCK_PEER_ADDR" { it == "127.0.0.1" || it == null }
+            "$SemanticAttributes.NET_SOCK_PEER_PORT" Long
             "$SemanticAttributes.MESSAGING_SYSTEM" "rabbitmq"
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "queue"
           }

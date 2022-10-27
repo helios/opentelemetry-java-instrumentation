@@ -100,10 +100,4 @@ enum SpringRabbitMessageAttributesGetter implements MessagingAttributesGetter<Me
     }
     return Collections.emptyList();
   }
-
-  @Nullable
-  @Override
-  public String messagePayload(Message message) {
-    return new String(message.getBody(), StandardCharsets.UTF_8);
-  }
 }

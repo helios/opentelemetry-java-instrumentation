@@ -8,9 +8,9 @@ package io.opentelemetry.javaagent.instrumentation.rabbitmq;
 import com.rabbitmq.client.GetResponse;
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 enum RabbitReceiveAttributesGetter

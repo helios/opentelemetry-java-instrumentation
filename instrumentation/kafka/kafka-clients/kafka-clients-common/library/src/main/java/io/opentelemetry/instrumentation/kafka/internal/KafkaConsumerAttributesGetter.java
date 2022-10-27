@@ -7,6 +7,10 @@ package io.opentelemetry.instrumentation.kafka.internal;
 
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -85,9 +89,10 @@ public enum KafkaConsumerAttributesGetter
     return String.valueOf(consumerRecord.value());
   }
 
-  @Nullable
   @Override
-  public String messagePayload(ConsumerRecord<?, ?> consumerRecord) {
-    return String.valueOf(consumerRecord.value());
+  public List<String> header(ConsumerRecord<?, ?> consumerRecord, String name) {
+    return StreamSupport.stream(consumerRecord.headers().headers(name).spliterator(), false)
+        .map(header -> new String(header.value(), StandardCharsets.UTF_8))
+        .collect(Collectors.toList());
   }
 }

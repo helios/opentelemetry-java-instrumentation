@@ -108,20 +108,4 @@ enum RocketMqProducerAttributeGetter
     }
     return Collections.emptyList();
   }
-
-  @Nullable
-  @Override
-  public String messagePayload(SendMessageContext sendMessageContext) {
-    Message message = sendMessageContext.getMessage();
-    if (message == null) {
-      return null;
-    }
-
-    byte[] body = message.getBody();
-    if (body == null) {
-      return null;
-    }
-
-    return new String(body, StandardCharsets.UTF_8);
-  }
 }
