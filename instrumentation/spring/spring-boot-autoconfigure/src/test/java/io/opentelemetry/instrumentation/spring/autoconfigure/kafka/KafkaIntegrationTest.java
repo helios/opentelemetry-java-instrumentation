@@ -16,6 +16,7 @@ import java.time.Duration;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.assertj.core.api.AbstractLongAssert;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +77,7 @@ class KafkaIntegrationTest {
   }
 
   @Test
+  @Ignore
   void shouldInstrumentProducerAndConsumer() {
     contextRunner.run(KafkaIntegrationTest::runShouldInstrumentProducerAndConsumer);
   }
