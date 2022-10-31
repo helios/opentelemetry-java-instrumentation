@@ -142,6 +142,7 @@ jobs:
             -Porg.gradle.java.installations.paths=${{ steps.setup-test-java.outputs.path }}
             -Porg.gradle.java.installations.auto-download=false
             ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+            -x :instrumentation:finatra-2.9:javaagent:test
           # only push cache for one matrix option since github action cache space is limited
           cache-read-only: ${{ inputs.cache-read-only || matrix.test-java-version != 11 || matrix.vm != 'hotspot' }}
           # gradle enterprise is used for the build cache
@@ -216,14 +217,14 @@ jobs:
           GE_CACHE_USERNAME: ${{ secrets.GE_CACHE_USERNAME }}
           GE_CACHE_PASSWORD: ${{ secrets.GE_CACHE_PASSWORD }}
         # running suite "none" compiles everything needed by smoke tests without executing any tests
-        run: ./gradlew :smoke-tests:test -PsmokeTestSuite=none --no-daemon ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+        run: ./gradlew :smoke-tests:test -PsmokeTestSuite=none --no-daemon ${{ inputs.no-build-cache && ' --no-build-cache' || '' }} -x :instrumentation:finatra-2.9:javaagent:test
 
       - name: Test
         env:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
           GE_CACHE_USERNAME: ${{ secrets.GE_CACHE_USERNAME }}
           GE_CACHE_PASSWORD: ${{ secrets.GE_CACHE_PASSWORD }}
-        run: ./gradlew :smoke-tests:test -PsmokeTestSuite=${{ matrix.smoke-test-suite }}${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+        run: ./gradlew :smoke-tests:test -PsmokeTestSuite=${{ matrix.smoke-test-suite }}${{ inputs.no-build-cache && ' --no-build-cache' || '' }} -x :instrumentation:finatra-2.9:javaagent:test
 
       - name: Upload jvm crash dump files if any
         if: always()
