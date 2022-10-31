@@ -32,7 +32,9 @@ public final class AgentConfig {
 
     if (heliosDebugEnv != null && Boolean.parseBoolean(heliosDebugEnv)) {
       return true;
-    }  }
+    }
+    return config.getBoolean("otel.javaagent.debug", false);
+  }
 
   private AgentConfig() {}
 }

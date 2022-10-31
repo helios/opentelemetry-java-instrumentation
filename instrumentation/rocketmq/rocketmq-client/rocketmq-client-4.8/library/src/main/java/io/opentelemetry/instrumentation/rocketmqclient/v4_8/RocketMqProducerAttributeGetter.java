@@ -7,9 +7,9 @@ package io.opentelemetry.instrumentation.rocketmqclient.v4_8;
 
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.apache.rocketmq.client.hook.SendMessageContext;
 import org.apache.rocketmq.client.producer.SendResult;
