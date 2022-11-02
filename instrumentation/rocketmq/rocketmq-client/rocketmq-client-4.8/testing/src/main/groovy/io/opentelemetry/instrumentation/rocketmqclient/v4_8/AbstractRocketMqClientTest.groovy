@@ -340,6 +340,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.send_result" "SEND_OK"
             "messaging.header.test_message_header" { it == ["test"] }
+            "messaging.payload" "Hello RocketMQ"
           }
         }
         span(2) {
@@ -358,6 +359,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.queue_id" Long
             "messaging.rocketmq.queue_offset" Long
             "messaging.header.test_message_header" { it == ["test"] }
+            "messaging.payload" "Hello RocketMQ"
           }
         }
         span(3) {
