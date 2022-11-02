@@ -84,7 +84,7 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
           })
       } else {
         applicationContext.getBean(AmqpTemplate)
-          .convertAndSend(ConsumerConfig.TEST_QUEUE, "test")
+          .convertAndSend(ConsumerConfig.TEST_QUEUE, "test payload")
       }
     }
 
