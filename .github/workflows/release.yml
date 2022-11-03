@@ -1,17 +1,8 @@
 name: Release
-
 on:
   workflow_dispatch:
 
 jobs:
-  spotless:
-    uses: ./.github/workflows/reusable-spotless.yml
-
-  license-check:
-    uses: ./.github/workflows/reusable-license-check.yml
-
-  assemble:
-    uses: ./.github/workflows/reusable-assemble.yml
 
   test-java8:
     uses: ./.github/workflows/reusable-test-8.yml
@@ -24,34 +15,29 @@ jobs:
   #   it can fail due to test code incompatibility with the new library version,
   #   or due to slight changes in emitted telemetry
 
-  smoke-test:
-    uses: ./.github/workflows/reusable-smoke-test.yml
-
+#  smoke-test:
+#    uses: ./.github/workflows/reusable-smoke-test.yml
+#
   #   muzzle is intentionally not included in the release workflows
   #   because any time a new library version is released to maven central it can fail,
   #   and this is not a reason to hold up the release
 
-  gradle-plugins:
-    uses: ./.github/workflows/reusable-gradle-plugins.yml
+#  gradle-plugins:
+#    uses: ./.github/workflows/reusable-gradle-plugins.yml
 
-  # removed this for now until we decide what to do with the extenstions
-  #  examples:
-  #    uses: ./.github/workflows/reusable-examples.yml
 
   release:
     needs:
-      - spotless
-      - license-check
       - assemble
       - test-java8
       - test-java11
-      - smoke-test
-      - gradle-plugins
-    #      - examples
+#      - smoke-test
+#      - gradle-plugins
     outputs:
       version: ${{ steps.create-github-release.outputs.version }}
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v3
 
       - name: Set environment variables
