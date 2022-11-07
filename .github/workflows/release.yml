@@ -1,4 +1,5 @@
 name: Release
+
 on:
   workflow_dispatch:
 
@@ -12,24 +13,24 @@ jobs:
   test-java11:
     uses: ./.github/workflows/reusable-test-11.yml
 
-#   test-latest-deps is intentionally not included in the release workflows
-#   because any time a new library version is released to maven central
-#   it can fail due to test code incompatibility with the new library version,
-#   or due to slight changes in emitted telemetry
+  #   test-latest-deps is intentionally not included in the release workflows
+  #   because any time a new library version is released to maven central
+  #   it can fail due to test code incompatibility with the new library version,
+  #   or due to slight changes in emitted telemetry
 
   smoke-test:
     uses: ./.github/workflows/reusable-smoke-test.yml
 
-#   muzzle is intentionally not included in the release workflows
-#   because any time a new library version is released to maven central it can fail,
-#   and this is not a reason to hold up the release
+  #   muzzle is intentionally not included in the release workflows
+  #   because any time a new library version is released to maven central it can fail,
+  #   and this is not a reason to hold up the release
 
   gradle-plugins:
     uses: ./.github/workflows/reusable-gradle-plugins.yml
 
-# removed this for now until we decide what to do with the extenstions
-#  examples:
-#    uses: ./.github/workflows/reusable-examples.yml
+  # removed this for now until we decide what to do with the extenstions
+  #  examples:
+  #    uses: ./.github/workflows/reusable-examples.yml
 
   release:
     needs:
@@ -38,12 +39,11 @@ jobs:
       - test-java11
       - smoke-test
       - gradle-plugins
-#      - examples
+    #      - examples
     outputs:
       version: ${{ steps.create-github-release.outputs.version }}
     runs-on: ubuntu-latest
     steps:
-
       - uses: actions/checkout@v3
 
       - name: Set environment variables
