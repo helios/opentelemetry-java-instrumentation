@@ -13,7 +13,7 @@
    ```
 
 2. Pray 🙏
-3. The updated agent jar under should be under `javaagent/build/libs`.
+3. The updated agent jar should be under `javaagent/build/libs`.
 
 ## Release
 
