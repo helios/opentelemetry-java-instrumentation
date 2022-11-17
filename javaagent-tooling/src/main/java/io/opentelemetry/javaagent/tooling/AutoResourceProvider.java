@@ -18,6 +18,7 @@ import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 import io.opentelemetry.sdk.autoconfigure.spi.ResourceProvider;
 import io.opentelemetry.sdk.resources.Resource;
+import java.util.Optional;
 
 @AutoService(ResourceProvider.class)
 public class AutoResourceProvider implements ResourceProvider {
@@ -28,7 +29,7 @@ public class AutoResourceProvider implements ResourceProvider {
   private static final AttributeKey<String> DEPLOYMENT_ENVIRONMENT =
       AttributeKey.stringKey("deployment.environment");
 
-  private static final AttributeKey<String> TELEMETRY_SAMPLING_RATION =
+  private static final AttributeKey<String> TELEMETRY_SAMPLING_RATIO =
       AttributeKey.stringKey("telemetry.sdk.sampling_ratio");
 
   private static final AttributeKey<String> SERVICE_NAME = AttributeKey.stringKey("service.name");
@@ -48,7 +49,7 @@ public class AutoResourceProvider implements ResourceProvider {
 
     Optional<Double> heliosRatioProperty = getHeliosSamplingRatioProperty();
     heliosRatioProperty.ifPresent(
-        ratio -> attributesBuilder.put(TELEMETRY_SAMPLING_RATION, ratio));
+        ratio -> attributesBuilder.put(TELEMETRY_SAMPLING_RATIO, ratio));
 
     Attributes attributes = attributesBuilder.build();
     return AgentVersion.VERSION == null ? Resource.empty() : Resource.create(attributes);
