@@ -6,7 +6,7 @@
 package io.opentelemetry.javaagent.tooling;
 
 import static io.opentelemetry.javaagent.tooling.AgentInstaller.JAVAAGENT_ENABLED_CONFIG;
-import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHeliosSamplingRationProperty;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHeliosSamplingRatioProperty;
 
 import com.google.auto.service.AutoService;
 import io.opentelemetry.exporter.logging.LoggingSpanExporter;
@@ -53,7 +53,7 @@ public class AgentTracerProviderConfigurer implements AutoConfigurationCustomize
     }
     sdkTracerProviderBuilder.addSpanProcessor(new HeliosProcessor());
 
-    Optional<Double> heliosRatioProperty = getHeliosSamplingRationProperty();
+    Optional<Double> heliosRatioProperty = getHeliosSamplingRatioProperty();
     heliosRatioProperty.ifPresent(
         ratioProperty -> sdkTracerProviderBuilder.setSampler(new HeliosSampler(ratioProperty)));
 

@@ -6,7 +6,7 @@
 package io.opentelemetry.javaagent.tooling;
 
 import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getEnvironmentName;
-import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHeliosSamplingRationProperty;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHeliosSamplingRatioProperty;
 import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getServiceName;
 import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.TELEMETRY_SDK_NAME;
 import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.TELEMETRY_SDK_VERSION;
@@ -46,7 +46,7 @@ public class AutoResourceProvider implements ResourceProvider {
     }
     attributesBuilder.put(SERVICE_NAME, getServiceName());
 
-    Optional<Double> heliosRatioProperty = getHeliosSamplingRationProperty();
+    Optional<Double> heliosRatioProperty = getHeliosSamplingRatioProperty();
     heliosRatioProperty.ifPresent(
         ratio -> attributesBuilder.put(TELEMETRY_SAMPLING_RATION, ratio));
 

@@ -40,7 +40,7 @@ public class HeliosConfiguration {
     return result == null ? DEFAULT_COLLECTOR_ENDPOINT : result;
   }
 
-  public static Optional<Double> getHeliosSamplingRationProperty() {
+  public static Optional<Double> getHeliosSamplingRatioProperty() {
     try {
       String ratio = System.getenv(String.valueOf(RatioProperty.HS_SAMPLING_RATIO));
       if (ratio == null) {
