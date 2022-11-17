@@ -49,7 +49,7 @@ public class AutoResourceProvider implements ResourceProvider {
 
     Optional<Double> heliosRatioProperty = getHeliosSamplingRatioProperty();
     heliosRatioProperty.ifPresent(
-        ratio -> attributesBuilder.put(TELEMETRY_SAMPLING_RATIO, ratio.toString()));
+        ratio -> attributesBuilder.put(TELEMETRY_SAMPLING_RATIO, Double.toString(ratio)));
 
     Attributes attributes = attributesBuilder.build();
     return AgentVersion.VERSION == null ? Resource.empty() : Resource.create(attributes);
