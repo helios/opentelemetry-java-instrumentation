@@ -6,6 +6,7 @@
 package io.opentelemetry.javaagent.tooling;
 
 import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getEnvironmentName;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHeliosSamplingRationProperty;
 import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getServiceName;
 import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.TELEMETRY_SDK_NAME;
 import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.TELEMETRY_SDK_VERSION;
@@ -27,6 +28,9 @@ public class AutoResourceProvider implements ResourceProvider {
   private static final AttributeKey<String> DEPLOYMENT_ENVIRONMENT =
       AttributeKey.stringKey("deployment.environment");
 
+  private static final AttributeKey<String> TELEMETRY_SAMPLING_RATION =
+      AttributeKey.stringKey("telemetry.sdk.sampling_ratio");
+
   private static final AttributeKey<String> SERVICE_NAME = AttributeKey.stringKey("service.name");
   private static final String TELEMETRY_SDK_NAME_VALUE = "helios-opentelemetry-javaagent";
 
@@ -41,6 +45,10 @@ public class AutoResourceProvider implements ResourceProvider {
       attributesBuilder.put(DEPLOYMENT_ENVIRONMENT, environmentNameByHelios);
     }
     attributesBuilder.put(SERVICE_NAME, getServiceName());
+
+    Optional<Double> heliosRatioProperty = getHeliosSamplingRationProperty();
+    heliosRatioProperty.ifPresent(
+        ratio -> attributesBuilder.put(TELEMETRY_SAMPLING_RATION, ratio));
 
     Attributes attributes = attributesBuilder.build();
     return AgentVersion.VERSION == null ? Resource.empty() : Resource.create(attributes);

@@ -6,6 +6,7 @@
 package io.opentelemetry.javaagent.tooling;
 
 import static io.opentelemetry.javaagent.tooling.AgentInstaller.JAVAAGENT_ENABLED_CONFIG;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHeliosSamplingRationProperty;
 
 import com.google.auto.service.AutoService;
 import io.opentelemetry.exporter.logging.LoggingSpanExporter;
@@ -74,35 +75,5 @@ public class AgentTracerProviderConfigurer implements AutoConfigurationCustomize
     return !Config.get()
         .getList("otel.traces.exporter", Collections.emptyList())
         .contains("logging");
-  }
-
-  private static Optional<Double> getHeliosSamplingRationProperty() {
-    try {
-      String ratio = System.getenv(String.valueOf(RatioProperty.HS_SAMPLING_RATIO));
-      if (ratio == null) {
-        ratio = System.getProperty(RatioProperty.HS_SAMPLING_RATIO.propertyName());
-        if (ratio != null) {
-          return Optional.of(Double.parseDouble(ratio));
-        }
-      }
-    } catch (Exception e) {
-      System.out.println("Exception while getting ratio property: " + e);
-    }
-
-    return Optional.empty();
-  }
-
-  private enum RatioProperty {
-    HS_SAMPLING_RATIO("hs.sampling.ratio");
-
-    private final String propertyName;
-
-    RatioProperty(String propertyName) {
-      this.propertyName = propertyName;
-    }
-
-    private String propertyName() {
-      return propertyName;
-    }
   }
 }

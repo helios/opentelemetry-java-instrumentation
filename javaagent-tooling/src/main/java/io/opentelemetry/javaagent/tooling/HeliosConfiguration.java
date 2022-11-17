@@ -39,4 +39,34 @@ public class HeliosConfiguration {
     String result = System.getenv(HELIOS_COLLECTOR_ENDPOINT_ENV_VAR);
     return result == null ? DEFAULT_COLLECTOR_ENDPOINT : result;
   }
+
+  public static Optional<Double> getHeliosSamplingRationProperty() {
+    try {
+      String ratio = System.getenv(String.valueOf(RatioProperty.HS_SAMPLING_RATIO));
+      if (ratio == null) {
+        ratio = System.getProperty(RatioProperty.HS_SAMPLING_RATIO.propertyName());
+        if (ratio != null) {
+          return Optional.of(Double.parseDouble(ratio));
+        }
+      }
+    } catch (Exception e) {
+      System.out.println("Exception while getting ratio property: " + e);
+    }
+
+    return Optional.empty();
+  }
+
+  private enum RatioProperty {
+    HS_SAMPLING_RATIO("hs.sampling.ratio");
+
+    private final String propertyName;
+
+    RatioProperty(String propertyName) {
+      this.propertyName = propertyName;
+    }
+
+    private String propertyName() {
+      return propertyName;
+    }
+  }
 }
