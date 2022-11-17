@@ -29,7 +29,7 @@ public class AutoResourceProvider implements ResourceProvider {
   private static final AttributeKey<String> DEPLOYMENT_ENVIRONMENT =
       AttributeKey.stringKey("deployment.environment");
 
-  private static final AttributeKey<String> TELEMETRY_SAMPLING_RATIO =
+  private static final AttributeKey<Double> TELEMETRY_SAMPLING_RATIO =
       AttributeKey.stringKey("telemetry.sdk.sampling_ratio");
 
   private static final AttributeKey<String> SERVICE_NAME = AttributeKey.stringKey("service.name");
