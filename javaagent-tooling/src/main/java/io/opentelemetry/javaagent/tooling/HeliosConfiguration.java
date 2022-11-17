@@ -8,6 +8,7 @@ package io.opentelemetry.javaagent.tooling;
 import static java.util.logging.Level.WARNING;
 
 import java.util.logging.Logger;
+import java.util.Optional;
 
 public class HeliosConfiguration {
 
