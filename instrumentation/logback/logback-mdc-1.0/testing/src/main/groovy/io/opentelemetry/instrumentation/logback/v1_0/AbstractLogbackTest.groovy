@@ -57,8 +57,6 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
     events[1].getMDCPropertyMap().get("trace_id") == null
     events[1].getMDCPropertyMap().get("span_id") == null
     events[1].getMDCPropertyMap().get("trace_flags") == null
-
-    assertTraces(0) {}
   }
 
   def "ids when span"() {

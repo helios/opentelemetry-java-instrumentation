@@ -33,8 +33,6 @@ class Log4j1MdcTest extends AgentInstrumentationSpecification {
     events[1].getMDC("trace_id") == null
     events[1].getMDC("span_id") == null
     events[1].getMDC("trace_flags") == null
-
-    assertTraces(0) {}
   }
 
   def "ids when span"() {
@@ -56,7 +54,6 @@ class Log4j1MdcTest extends AgentInstrumentationSpecification {
 
     then:
     def events = ListAppender.events
-    def HELIOS_INSTRUMENTED_INDICATION = "heliosLogInstrumented"
 
     events.size() == 3
     events[0].message == "log message 1"
@@ -75,22 +72,5 @@ class Log4j1MdcTest extends AgentInstrumentationSpecification {
     events[2].getMDC("trace_id") == span2.spanContext.traceId
     events[2].getMDC("span_id") == span2.spanContext.spanId
     events[2].getMDC("trace_flags") == "01"
-
-    assertTraces(2) {
-      trace(0, 1) {
-        span(0) {
-          attributes {
-            "$HELIOS_INSTRUMENTED_INDICATION" "log4j"
-          }
-        }
-      }
-      trace(1, 1) {
-        span(0) {
-          attributes {
-            "$HELIOS_INSTRUMENTED_INDICATION" "log4j"
-          }
-        }
-      }
-    }
   }
 }

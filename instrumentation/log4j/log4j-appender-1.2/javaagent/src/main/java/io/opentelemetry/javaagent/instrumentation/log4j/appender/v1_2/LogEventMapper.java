@@ -5,7 +5,6 @@
 
 package io.opentelemetry.javaagent.instrumentation.log4j.appender.v1_2;
 
-import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static java.util.Collections.emptyList;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -79,7 +78,6 @@ public final class LogEventMapper {
     }
 
     AttributesBuilder attributes = Attributes.builder();
-    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
 
     // throwable
     if (throwable != null) {

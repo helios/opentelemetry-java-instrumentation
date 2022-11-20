@@ -57,14 +57,6 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
   @SuppressWarnings("unused")
   public static class GetMdcAdvice {
 
-    @Advice.OnMethodEnter(suppress = Throwable.class)
-    public static void onEnter() {
-      Context spanContext = Java8BytecodeBridge.currentContext();
-      Span span = Java8BytecodeBridge.spanFromContext(spanContext);
-      span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
-      System.out.print(span);
-    }
-
     @Advice.OnMethodExit(suppress = Throwable.class)
     public static void onExit(
         @Advice.This ILoggingEvent event,
