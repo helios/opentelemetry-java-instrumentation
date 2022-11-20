@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.log4j.contextdata.v2_17;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.SPAN_ID;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_FLAGS;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_ID;
@@ -37,6 +38,9 @@ public class OpenTelemetryContextDataProvider implements ContextDataProvider {
 
     Map<String, String> contextData = new HashMap<>();
     SpanContext spanContext = currentSpan.getSpanContext();
+    if (currentSpan.isRecording()) {
+      currentSpan.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    }
     contextData.put(TRACE_ID, spanContext.getTraceId());
     contextData.put(SPAN_ID, spanContext.getSpanId());
     contextData.put(TRACE_FLAGS, spanContext.getTraceFlags().asHex());

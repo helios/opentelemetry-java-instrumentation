@@ -13,6 +13,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Shared
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION
+
 abstract class AbstractLogbackTest extends InstrumentationSpecification {
 
   private static final Logger logger = LoggerFactory.getLogger("test")
@@ -55,6 +57,8 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
     events[1].getMDCPropertyMap().get("trace_id") == null
     events[1].getMDCPropertyMap().get("span_id") == null
     events[1].getMDCPropertyMap().get("trace_flags") == null
+
+    assertTraces(0) {}
   }
 
   def "ids when span"() {
@@ -89,5 +93,22 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
     events[2].getMDCPropertyMap().get("trace_id") == span2.spanContext.traceId
     events[2].getMDCPropertyMap().get("span_id") == span2.spanContext.spanId
     events[2].getMDCPropertyMap().get("trace_flags") == "01"
+
+    assertTraces(2) {
+      trace(0, 1) {
+        span(0) {
+          attributes {
+            "$HELIOS_INSTRUMENTED_INDICATION" "logback"
+          }
+        }
+      }
+      trace(1, 1) {
+        span(0) {
+          attributes {
+            "$HELIOS_INSTRUMENTED_INDICATION" "logback"
+          }
+        }
+      }
+    }
   }
 }
