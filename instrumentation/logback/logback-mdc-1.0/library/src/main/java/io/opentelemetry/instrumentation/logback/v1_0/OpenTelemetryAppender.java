@@ -33,14 +33,14 @@ public class OpenTelemetryAppender extends UnsynchronizedAppenderBase<ILoggingEv
       return event;
     }
 
-    if (currentSpan.isRecording()) {
-      currentSpan.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
-    }
-
     Map<String, String> eventContext = event.getMDCPropertyMap();
     if (eventContext != null && eventContext.containsKey(TRACE_ID)) {
       // Assume already instrumented event if traceId is present.
       return event;
+    }
+
+    if (currentSpan.isRecording()) {
+      currentSpan.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
     }
 
     Map<String, String> contextData = new HashMap<>();
