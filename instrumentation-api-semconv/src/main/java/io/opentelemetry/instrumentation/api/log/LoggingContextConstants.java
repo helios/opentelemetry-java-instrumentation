@@ -30,6 +30,8 @@ public final class LoggingContextConstants {
    * @see SpanContext#getTraceFlags()
    */
   public static final String TRACE_FLAGS = "trace_flags";
+  /** Helios Key under which the current logger name will be injected into the span attributes. */
+  public static final String HELIOS_INSTRUMENTED_INDICATION = "heliosLogInstrumented";
 
   private LoggingContextConstants() {}
 }

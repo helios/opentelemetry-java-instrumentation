@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.logback.mdc.v1_0;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.SPAN_ID;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_FLAGS;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_ID;
@@ -17,6 +18,7 @@ import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.util.VirtualField;
@@ -69,9 +71,14 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
         return;
       }
 
-      SpanContext spanContext = Java8BytecodeBridge.spanFromContext(context).getSpanContext();
+      Span span = Java8BytecodeBridge.spanFromContext(context);
+      SpanContext spanContext = span.getSpanContext();
       if (!spanContext.isValid()) {
         return;
+      }
+
+      if (span.isRecording()) {
+        span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
       }
 
       Map<String, String> spanContextData = new HashMap<>();

@@ -5,10 +5,12 @@
 
 package io.opentelemetry.javaagent.instrumentation.log4j.contextdata.v2_7;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.SPAN_ID;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_FLAGS;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_ID;
 
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
 import java.util.List;
@@ -34,9 +36,14 @@ public final class SpanDecoratingContextDataInjector implements ContextDataInjec
       return contextData;
     }
 
-    SpanContext currentContext = Java8BytecodeBridge.currentSpan().getSpanContext();
+    Span span = Java8BytecodeBridge.currentSpan();
+    SpanContext currentContext = span.getSpanContext();
     if (!currentContext.isValid()) {
       return contextData;
+    }
+
+    if (span.isRecording()) {
+      span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j");
     }
 
     StringMap newContextData = new SortedArrayStringMap(contextData);
