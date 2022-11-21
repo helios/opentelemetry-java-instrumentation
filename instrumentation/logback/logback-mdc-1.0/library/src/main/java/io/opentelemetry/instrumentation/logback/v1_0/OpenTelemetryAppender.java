@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.logback.v1_0;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.SPAN_ID;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_FLAGS;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_ID;
@@ -30,6 +31,10 @@ public class OpenTelemetryAppender extends UnsynchronizedAppenderBase<ILoggingEv
     Span currentSpan = Span.current();
     if (!currentSpan.getSpanContext().isValid()) {
       return event;
+    }
+
+    if (currentSpan.isRecording()) {
+      currentSpan.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
     }
 
     Map<String, String> eventContext = event.getMDCPropertyMap();
