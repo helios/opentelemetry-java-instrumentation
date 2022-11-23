@@ -41,7 +41,6 @@ abstract class Log4j2Test extends InstrumentationSpecification {
   def "ids when span"() {
     given:
     def logger = LogManager.getLogger("TestLogger")
-    def HELIOS_INSTRUMENTED_INDICATION = "heliosLogInstrumented"
 
     when:
     Span span1 = runWithSpan("test") {
@@ -79,14 +78,14 @@ abstract class Log4j2Test extends InstrumentationSpecification {
       trace(0, 1) {
         span(0) {
           attributes {
-            "$HELIOS_INSTRUMENTED_INDICATION" "log4j"
+            "heliosLogInstrumented" "log4j"
           }
         }
       }
       trace(1, 1) {
         span(0) {
           attributes {
-            "$HELIOS_INSTRUMENTED_INDICATION" "log4j"
+            "heliosLogInstrumented" "log4j"
           }
         }
       }
