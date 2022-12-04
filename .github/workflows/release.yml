@@ -28,7 +28,6 @@ jobs:
 
   release:
     needs:
-      - assemble
       - test-java8
       - test-java11
 #      - smoke-test
