@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.logback.appender.v1_0.internal;
 
+import static java.util.Collections.emptyList;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
@@ -14,6 +15,8 @@ import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.LogRecordBuilder;
 import io.opentelemetry.api.logs.LoggerProvider;
 import io.opentelemetry.api.logs.Severity;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.internal.cache.Cache;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
@@ -93,6 +96,13 @@ public final class LoggingEventMapper {
     }
 
     AttributesBuilder attributes = Attributes.builder();
+
+    Context parentContext = Context.current();
+    SpanContext parentSpanContext = Span.fromContext(parentContext).getSpanContext();
+
+    if (parentSpanContext.isValid()) {
+      attributes.put(HELIOS_INSTRUMENTED_INDICATION, "logback");
+    }
 
     // throwable
     Object throwableProxy = loggingEvent.getThrowableProxy();
