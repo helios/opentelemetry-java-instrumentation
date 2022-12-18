@@ -30,20 +30,11 @@ val javaagentLibs by configurations.creating {
   extendsFrom(baseJavaagentLibs)
 }
 
-// exclude javaagent dependencies from the bootstrap classpath
-bootstrapLibs.run {
-  exclude("net.bytebuddy")
-  exclude("org.ow2.asm")
-  exclude("io.opentelemetry", "opentelemetry-sdk")
-  exclude("io.opentelemetry", "opentelemetry-sdk-extension-autoconfigure")
-  exclude("io.opentelemetry", "opentelemetry-sdk-extension-autoconfigure-spi")
-}
-
 // exclude dependencies that are to be placed in bootstrap from agent libs - they won't be added to inst/
 listOf(baseJavaagentLibs, javaagentLibs).forEach {
   it.run {
-    exclude("org.slf4j")
     exclude("io.opentelemetry", "opentelemetry-api")
+    exclude("io.opentelemetry", "opentelemetry-api-logs")
     exclude("io.opentelemetry", "opentelemetry-semconv")
   }
 }
@@ -54,22 +45,30 @@ val licenseReportDependencies by configurations.creating {
 
 dependencies {
   bootstrapLibs(project(":instrumentation-api"))
+  // opentelemetry-api is an api dependency of :instrumentation-api, but opentelemetry-api-logs is not
+  bootstrapLibs("io.opentelemetry:opentelemetry-api-logs")
   bootstrapLibs(project(":instrumentation-api-semconv"))
   bootstrapLibs(project(":instrumentation-annotations-support"))
-  bootstrapLibs(project(":instrumentation-appender-api-internal"))
   bootstrapLibs(project(":javaagent-bootstrap"))
 
   // extension-api contains both bootstrap packages and agent packages
-  bootstrapLibs(project(":javaagent-extension-api"))
+  bootstrapLibs(project(":javaagent-extension-api")) {
+    // exclude javaagent dependencies from the bootstrap classpath
+    exclude("net.bytebuddy")
+    exclude("org.ow2.asm")
+    exclude("io.opentelemetry", "opentelemetry-sdk")
+    exclude("io.opentelemetry", "opentelemetry-sdk-extension-autoconfigure")
+    exclude("io.opentelemetry", "opentelemetry-sdk-extension-autoconfigure-spi")
+  }
   baseJavaagentLibs(project(":javaagent-extension-api"))
 
   baseJavaagentLibs(project(":javaagent-tooling"))
+  baseJavaagentLibs(project(":javaagent-internal-logging-simple", configuration = "shadow"))
   baseJavaagentLibs(project(":muzzle"))
-  // TODO (trask) replace with opentelemetry-instrumentation-annotations
-  baseJavaagentLibs(project(":instrumentation:opentelemetry-extension-annotations-1.0:javaagent"))
   baseJavaagentLibs(project(":instrumentation:opentelemetry-api:opentelemetry-api-1.0:javaagent"))
   baseJavaagentLibs(project(":instrumentation:opentelemetry-api:opentelemetry-api-1.4:javaagent"))
   baseJavaagentLibs(project(":instrumentation:opentelemetry-instrumentation-api:javaagent"))
+  baseJavaagentLibs(project(":instrumentation:opentelemetry-instrumentation-annotations-1.16:javaagent"))
   baseJavaagentLibs(project(":instrumentation:executors:javaagent"))
   baseJavaagentLibs(project(":instrumentation:internal:internal-class-loader:javaagent"))
   baseJavaagentLibs(project(":instrumentation:internal:internal-eclipse-osgi-3.6:javaagent"))
@@ -84,6 +83,7 @@ dependencies {
   //  in case there are dependencies (accidentally) pulled in by instrumentation modules
   //  but I couldn't get that to work
   licenseReportDependencies(project(":javaagent-tooling"))
+  licenseReportDependencies(project(":javaagent-internal-logging-simple"))
   licenseReportDependencies(project(":javaagent-extension-api"))
 
   testCompileOnly(project(":javaagent-bootstrap"))
@@ -107,6 +107,12 @@ project(":instrumentation").subprojects {
   }
 
   plugins.withId("otel.javaagent-instrumentation") {
+    javaagentDependencies.run {
+      add(javaagentLibs.name, project(subProj.path))
+    }
+  }
+
+  plugins.withId("otel.sdk-extension") {
     javaagentDependencies.run {
       add(javaagentLibs.name, project(subProj.path))
     }
@@ -257,9 +263,17 @@ licenseReport {
 
   configurations = arrayOf(licenseReportDependencies.name)
 
+  excludeBoms = true
+
   excludeGroups = arrayOf(
-    "io.opentelemetry.instrumentation",
-    "io.opentelemetry.javaagent"
+    "io\\.opentelemetry\\.instrumentation",
+    "io\\.opentelemetry\\.javaagent",
+    "io\\.opentelemetry\\.dummy\\..*"
+  )
+
+  excludes = arrayOf(
+    "io.opentelemetry:opentelemetry-bom-alpha",
+    "opentelemetry-java-instrumentation:dependencyManagement"
   )
 
   filters = arrayOf(LicenseBundleNormalizer("$projectDir/license-normalizer-bundle.json", true))
@@ -284,7 +298,6 @@ fun ShadowJar.excludeBootstrapClasses() {
     exclude(project(":instrumentation-api"))
     exclude(project(":instrumentation-api-semconv"))
     exclude(project(":instrumentation-annotations-support"))
-    exclude(project(":instrumentation-appender-api-internal"))
     exclude(project(":javaagent-bootstrap"))
   }
 

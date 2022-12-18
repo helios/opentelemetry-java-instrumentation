@@ -9,6 +9,8 @@ import com.rabbitmq.client.GetResponse;
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 
 enum RabbitReceiveAttributesGetter
@@ -100,5 +102,17 @@ enum RabbitReceiveAttributesGetter
     }
 
     return null;
+  }
+
+  @Override
+  public List<String> header(ReceiveRequest request, String name) {
+    GetResponse response = request.getResponse();
+    if (response != null) {
+      Object value = request.getResponse().getProps().getHeaders().get(name);
+      if (value != null) {
+        return Collections.singletonList(value.toString());
+      }
+    }
+    return Collections.emptyList();
   }
 }

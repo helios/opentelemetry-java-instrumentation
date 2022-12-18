@@ -12,7 +12,6 @@ import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
-import io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.SpanNameExtractor;
 import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
@@ -57,7 +56,7 @@ public class PubsubSingletons {
 
     return Instrumenter.<PubsubMessage, Void>builder(
             GlobalOpenTelemetry.get(), instrumentationName, publisherSpanNameExtractor)
-        .newInstrumenter(SpanKindExtractor.alwaysProducer());
+        .buildProducerInstrumenter(PubSubAttributesMapSetter.INSTANCE);
   }
 
   public static Instrumenter<PubsubMessage, Void> createSubscriberInstrumenter() {
@@ -66,7 +65,7 @@ public class PubsubSingletons {
 
     return Instrumenter.<PubsubMessage, Void>builder(
             GlobalOpenTelemetry.get(), instrumentationName, subscriberSpanNameExtractor)
-        .newInstrumenter(SpanKindExtractor.alwaysConsumer());
+        .buildConsumerInstrumenter(PubSubAttributesMapGetter.INSTANCE);
   }
 
   public static void startAndInjectSpan(

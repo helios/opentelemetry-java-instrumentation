@@ -30,7 +30,9 @@ public final class WebfluxSingletons {
     }
 
     INSTRUMENTER =
-        builder.setEnabled(ExperimentalConfig.get().controllerTelemetryEnabled()).newInstrumenter();
+        builder
+            .setEnabled(ExperimentalConfig.get().controllerTelemetryEnabled())
+            .buildInstrumenter();
   }
 
   public static Instrumenter<Object, Void> instrumenter() {
@@ -39,9 +41,14 @@ public final class WebfluxSingletons {
 
   public static HttpRouteGetter<ServerWebExchange> httpRouteGetter() {
     return (context, exchange) -> {
-      PathPattern bestPattern =
-          exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-      return bestPattern == null ? null : bestPattern.getPatternString();
+      Object bestPatternObj = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+      if (bestPatternObj == null) {
+        return null;
+      }
+      if (bestPatternObj instanceof PathPattern) {
+        return ((PathPattern) bestPatternObj).getPatternString();
+      }
+      return bestPatternObj.toString();
     };
   }
 

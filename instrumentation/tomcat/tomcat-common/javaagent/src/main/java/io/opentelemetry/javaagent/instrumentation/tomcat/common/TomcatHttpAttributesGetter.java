@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.tomcat.common;
 
+import static io.opentelemetry.javaagent.instrumentation.tomcat.common.TomcatHelper.messageBytesToString;
+
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpServerAttributesGetter;
 import java.util.Collections;
 import java.util.List;
@@ -22,14 +24,14 @@ public class TomcatHttpAttributesGetter implements HttpServerAttributesGetter<Re
 
   @Override
   public String method(Request request) {
-    return request.method().toString();
+    return messageBytesToString(request.method());
   }
 
   @Override
   @Nullable
   public String target(Request request) {
-    String target = request.requestURI().toString();
-    String queryString = request.queryString().toString();
+    String target = messageBytesToString(request.requestURI());
+    String queryString = messageBytesToString(request.queryString());
     if (queryString != null) {
       target += "?" + queryString;
     }
@@ -40,7 +42,7 @@ public class TomcatHttpAttributesGetter implements HttpServerAttributesGetter<Re
   @Nullable
   public String scheme(Request request) {
     MessageBytes schemeMessageBytes = request.scheme();
-    return schemeMessageBytes.isNull() ? "http" : schemeMessageBytes.toString();
+    return schemeMessageBytes.isNull() ? "http" : messageBytesToString(schemeMessageBytes);
   }
 
   @Override
@@ -50,21 +52,8 @@ public class TomcatHttpAttributesGetter implements HttpServerAttributesGetter<Re
 
   @Override
   @Nullable
-  public Long requestContentLength(Request request, @Nullable Response response) {
-    long contentLength = request.getContentLengthLong();
-    return contentLength != -1 ? contentLength : null;
-  }
-
-  @Override
-  @Nullable
-  public Long requestContentLengthUncompressed(Request request, @Nullable Response response) {
-    return null;
-  }
-
-  @Override
-  @Nullable
   public String flavor(Request request) {
-    String flavor = request.protocol().toString();
+    String flavor = messageBytesToString(request.protocol());
     if (flavor != null) {
       // remove HTTP/ prefix to comply with semantic conventions
       if (flavor.startsWith("HTTP/")) {
@@ -76,21 +65,8 @@ public class TomcatHttpAttributesGetter implements HttpServerAttributesGetter<Re
 
   @Override
   @Nullable
-  public Integer statusCode(Request request, Response response) {
+  public Integer statusCode(Request request, Response response, @Nullable Throwable error) {
     return response.getStatus();
-  }
-
-  @Override
-  @Nullable
-  public Long responseContentLength(Request request, Response response) {
-    long contentLength = response.getContentLengthLong();
-    return contentLength != -1 ? contentLength : null;
-  }
-
-  @Override
-  @Nullable
-  public Long responseContentLengthUncompressed(Request request, Response response) {
-    return null;
   }
 
   @Override

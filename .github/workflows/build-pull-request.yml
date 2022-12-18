@@ -8,13 +8,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  assemble:
-    uses: ./.github/workflows/reusable-assemble.yml
+  common:
+    uses: ./.github/workflows/build-common.yml
     with:
+      # windows smoke tests are slower, and it's rare for only the windows smoke tests to break
+      skip-windows-smoke-tests: ${{ !contains(github.event.pull_request.labels.*.name, 'test windows') }}
       cache-read-only: true
 
-  test-java11:
-    uses: ./.github/workflows/reusable-test-11.yml
+  muzzle:
+    # release branch PRs are excluded
+    # because any time a new library version is released to maven central it can fail
+    # which requires unnecessary release branch maintenance, especially for patches
+    if: ${{ !startsWith(github.base_ref, 'release/') }}
+    uses: ./.github/workflows/reusable-muzzle.yml
     with:
       cache-read-only: true
 
@@ -26,13 +32,19 @@ jobs:
     uses: ./.github/workflows/reusable-misspell-check.yml
 
   required-status-check:
+    # test-latest-deps is not included in the required status checks
+    # because any time a new library version is released to maven central
+    # it can fail due to test code incompatibility with the new library version,
+    # or due to slight changes in emitted telemetry
+    # (muzzle can also fail when a new library version is released to maven central
+    # but that happens much less often)
     needs:
-      - assemble
-      - test-java11
+      - common
+      - muzzle
     runs-on: ubuntu-latest
     if: always()
     steps:
       - if: |
-          needs.assemble.result != 'success' ||
-          needs.test-java11.result != 'success'
+          needs.common.result != 'success' ||
+          (!startsWith(github.base_ref, 'release/') && needs.muzzle.result != 'success')
         run: exit 1

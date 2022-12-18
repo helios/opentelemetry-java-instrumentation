@@ -7,6 +7,8 @@ package io.opentelemetry.javaagent.instrumentation.rabbitmq;
 
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 
 enum RabbitChannelAttributesGetter implements MessagingAttributesGetter<ChannelAndMethod, Void> {
@@ -72,6 +74,23 @@ enum RabbitChannelAttributesGetter implements MessagingAttributesGetter<ChannelA
   @Nullable
   @Override
   public String messageId(ChannelAndMethod channelAndMethod, @Nullable Void unused) {
+    return null;
+  }
+
+  @Override
+  public List<String> header(ChannelAndMethod channelAndMethod, String name) {
+    if (channelAndMethod.getHeaders() != null) {
+      Object value = channelAndMethod.getHeaders().get(name);
+      if (value != null) {
+        return Collections.singletonList(value.toString());
+      }
+    }
+    return Collections.emptyList();
+  }
+
+  @Nullable
+  @Override
+  public String messagePayload(ChannelAndMethod channelAndMethod) {
     return null;
   }
 }

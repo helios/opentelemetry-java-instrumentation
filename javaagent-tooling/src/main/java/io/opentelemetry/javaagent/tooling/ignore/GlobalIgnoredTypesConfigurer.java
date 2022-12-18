@@ -16,7 +16,7 @@ import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 public class GlobalIgnoredTypesConfigurer implements IgnoredTypesConfigurer {
 
   @Override
-  public void configure(ConfigProperties config, IgnoredTypesBuilder builder) {
+  public void configure(IgnoredTypesBuilder builder, ConfigProperties config) {
     configureIgnoredTypes(builder);
     configureIgnoredClassLoaders(builder);
     configureIgnoredTasks(builder);
@@ -61,7 +61,6 @@ public class GlobalIgnoredTypesConfigurer implements IgnoredTypesConfigurer {
     // tests under "io.opentelemetry.javaagent." will still be instrumented
     builder.ignoreClass("io.opentelemetry.javaagent.bootstrap.");
     builder.ignoreClass("io.opentelemetry.javaagent.shaded.");
-    builder.ignoreClass("io.opentelemetry.javaagent.slf4j.");
 
     builder
         .ignoreClass("java.")

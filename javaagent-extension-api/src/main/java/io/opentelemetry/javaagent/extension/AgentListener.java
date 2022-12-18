@@ -5,8 +5,8 @@
 
 package io.opentelemetry.javaagent.extension;
 
-import io.opentelemetry.instrumentation.api.config.Config;
 import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk;
+import io.opentelemetry.sdk.autoconfigure.spi.Ordered;
 import java.lang.instrument.Instrumentation;
 import net.bytebuddy.agent.builder.AgentBuilder;
 
@@ -22,25 +22,7 @@ public interface AgentListener extends Ordered {
 
   /**
    * Runs after instrumentations are added to {@link AgentBuilder} and after the agent is installed
-   * on an {@link Instrumentation}. Not called if noop api enabled via {@code
-   * otel.javaagent.experimental.use-noop-api}.
-   *
-   * @deprecated Implement {{@link #afterAgent(AutoConfiguredOpenTelemetrySdk)}} instead.
+   * on an {@link Instrumentation}.
    */
-  @Deprecated
-  default void afterAgent(
-      Config config, AutoConfiguredOpenTelemetrySdk autoConfiguredOpenTelemetrySdk) {
-    throw new UnsupportedOperationException(
-        "This method is deprecated and will be removed in a future release;"
-            + " implement AgentListener#afterAgent(AutoConfiguredOpenTelemetrySdk) instead");
-  }
-
-  /**
-   * Runs after instrumentations are added to {@link AgentBuilder} and after the agent is installed
-   * on an {@link Instrumentation}. Not called if noop api enabled via {@code
-   * otel.javaagent.experimental.use-noop-api}.
-   */
-  default void afterAgent(AutoConfiguredOpenTelemetrySdk autoConfiguredOpenTelemetrySdk) {
-    afterAgent(Config.get(), autoConfiguredOpenTelemetrySdk);
-  }
+  void afterAgent(AutoConfiguredOpenTelemetrySdk autoConfiguredOpenTelemetrySdk);
 }

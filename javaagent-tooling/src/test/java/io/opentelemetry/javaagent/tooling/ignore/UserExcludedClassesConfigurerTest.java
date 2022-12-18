@@ -31,7 +31,7 @@ class UserExcludedClassesConfigurerTest {
   @Test
   void shouldAddNothingToBuilderWhenPropertyIsEmpty() {
     // when
-    underTest.configure(config, builder);
+    underTest.configure(builder, config);
 
     // then
     verifyNoInteractions(builder);
@@ -40,14 +40,12 @@ class UserExcludedClassesConfigurerTest {
   @Test
   void shouldIgnoreClassesAndPackages() {
     // given
-    // TODO: remove normalization after
-    // https://github.com/open-telemetry/opentelemetry-java/issues/4562 is fixed
-    when(config.getList(EXCLUDED_CLASSES_CONFIG.replace('-', '.'), emptyList()))
+    when(config.getList(EXCLUDED_CLASSES_CONFIG, emptyList()))
         .thenReturn(
             asList("com.example.IgnoredClass", "com.example.ignored.*", "com.another_ignore"));
 
     // when
-    underTest.configure(config, builder);
+    underTest.configure(builder, config);
 
     // then
     verify(builder).ignoreClass("com.example.IgnoredClass");

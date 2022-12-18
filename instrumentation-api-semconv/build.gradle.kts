@@ -17,6 +17,9 @@ dependencies {
   compileOnly("com.google.auto.value:auto-value-annotations")
   annotationProcessor("com.google.auto.value:auto-value")
 
+  implementation("com.fasterxml.jackson.core:jackson-core:2.13.3")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
+
   testImplementation(project(":testing-common"))
   testImplementation("io.opentelemetry:opentelemetry-sdk-metrics")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
@@ -37,24 +40,5 @@ tasks {
 
   sourcesJar {
     dependsOn("generateJflex")
-  }
-
-  val testStatementSanitizerConfig by registering(Test::class) {
-    filter {
-      includeTestsMatching("StatementSanitizationConfigTest")
-    }
-    include("**/StatementSanitizationConfigTest.*")
-    jvmArgs("-Dotel.instrumentation.common.db-statement-sanitizer.enabled=false")
-  }
-
-  test {
-    filter {
-      excludeTestsMatching("StatementSanitizationConfigTest")
-    }
-    jvmArgs("-Dotel.instrumentation.common.db-statement-sanitizer.enabled=true")
-  }
-
-  check {
-    dependsOn(testStatementSanitizerConfig)
   }
 }

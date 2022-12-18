@@ -7,17 +7,18 @@ package io.opentelemetry.javaagent.instrumentation.reactornetty.v1_0;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
-import io.opentelemetry.instrumentation.api.instrumenter.PeerServiceAttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpClientAttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpClientMetrics;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpSpanNameExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpSpanStatusExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.net.NetClientAttributesExtractor;
-import io.opentelemetry.javaagent.bootstrap.internal.DeprecatedConfigPropertyWarning;
+import io.opentelemetry.instrumentation.api.instrumenter.net.PeerServiceAttributesExtractor;
+import io.opentelemetry.instrumentation.netty.v4.common.internal.client.NettyClientInstrumenterFactory;
+import io.opentelemetry.instrumentation.netty.v4.common.internal.client.NettyConnectionInstrumenter;
+import io.opentelemetry.javaagent.bootstrap.internal.CommonConfig;
+import io.opentelemetry.javaagent.bootstrap.internal.DeprecatedConfigProperties;
 import io.opentelemetry.javaagent.bootstrap.internal.InstrumentationConfig;
-import io.opentelemetry.javaagent.instrumentation.netty.v4.common.client.NettyClientInstrumenterFactory;
-import io.opentelemetry.javaagent.instrumentation.netty.v4.common.client.NettyConnectionInstrumenter;
 import reactor.netty.http.client.HttpClientConfig;
 import reactor.netty.http.client.HttpClientResponse;
 
@@ -29,16 +30,12 @@ public final class ReactorNettySingletons {
 
   static {
     InstrumentationConfig config = InstrumentationConfig.get();
-    DeprecatedConfigPropertyWarning.warnIfUsed(
-        config,
-        "otel.instrumentation.reactor-netty.always-create-connect-span",
-        "otel.instrumentation.reactor-netty.connection-telemetry.enabled");
-    boolean alwaysCreateConnectSpan =
-        config.getBoolean("otel.instrumentation.reactor-netty.always-create-connect-span", false);
     connectionTelemetryEnabled =
-        config.getBoolean(
+        DeprecatedConfigProperties.getBoolean(
+            config,
+            "otel.instrumentation.reactor-netty.always-create-connect-span",
             "otel.instrumentation.reactor-netty.connection-telemetry.enabled",
-            alwaysCreateConnectSpan);
+            false);
   }
 
   private static final Instrumenter<HttpClientConfig, HttpClientResponse> INSTRUMENTER;
@@ -56,15 +53,26 @@ public final class ReactorNettySingletons {
                 INSTRUMENTATION_NAME,
                 HttpSpanNameExtractor.create(httpAttributesGetter))
             .setSpanStatusExtractor(HttpSpanStatusExtractor.create(httpAttributesGetter))
-            .addAttributesExtractor(HttpClientAttributesExtractor.create(httpAttributesGetter))
+            .addAttributesExtractor(
+                HttpClientAttributesExtractor.builder(httpAttributesGetter)
+                    .setCapturedRequestHeaders(CommonConfig.get().getClientRequestHeaders())
+                    .setCapturedResponseHeaders(CommonConfig.get().getClientResponseHeaders())
+                    .build())
             .addAttributesExtractor(NetClientAttributesExtractor.create(netAttributesGetter))
-            .addAttributesExtractor(PeerServiceAttributesExtractor.create(netAttributesGetter))
+            .addAttributesExtractor(
+                PeerServiceAttributesExtractor.create(
+                    netAttributesGetter, CommonConfig.get().getPeerServiceMapping()))
             .addOperationMetrics(HttpClientMetrics.get())
             // headers are injected in ResponseReceiverInstrumenter
-            .newInstrumenter(SpanKindExtractor.alwaysClient());
+            .buildInstrumenter(SpanKindExtractor.alwaysClient());
 
     NettyClientInstrumenterFactory instrumenterFactory =
-        new NettyClientInstrumenterFactory(INSTRUMENTATION_NAME, connectionTelemetryEnabled, false);
+        new NettyClientInstrumenterFactory(
+            GlobalOpenTelemetry.get(),
+            INSTRUMENTATION_NAME,
+            connectionTelemetryEnabled,
+            false,
+            CommonConfig.get().getPeerServiceMapping());
     CONNECTION_INSTRUMENTER = instrumenterFactory.createConnectionInstrumenter();
   }
 
