@@ -47,8 +47,12 @@ class Log4j1Test extends AgentInstrumentationSpecification {
     }
 
     then:
+    def HELIOS_INSTRUMENTED_INDICATION = "heliosLogInstrumented"
+    int heliosAttrsLength = 0
+
     if (parent) {
       waitForTraces(1)
+      heliosAttrsLength++
     }
 
     if (severity != null) {
@@ -63,12 +67,12 @@ class Log4j1Test extends AgentInstrumentationSpecification {
       assertThat(log.getSeverity()).isEqualTo(severity)
       assertThat(log.getSeverityText()).isEqualTo(severityText)
       if (exception) {
-        assertThat(log.getAttributes().size()).isEqualTo(5)
+        assertThat(log.getAttributes().size()).isEqualTo(5 + heliosAttrsLength)
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_TYPE)).isEqualTo(IllegalStateException.getName())
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_MESSAGE)).isEqualTo("hello")
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_STACKTRACE)).contains(Log4j1Test.name)
       } else {
-        assertThat(log.getAttributes().size()).isEqualTo(2)
+        assertThat(log.getAttributes().size()).isEqualTo(2 + heliosAttrsLength)
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_TYPE)).isNull()
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_MESSAGE)).isNull()
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_STACKTRACE)).isNull()
@@ -77,6 +81,7 @@ class Log4j1Test extends AgentInstrumentationSpecification {
       assertThat(log.getAttributes().get(SemanticAttributes.THREAD_ID)).isEqualTo(Thread.currentThread().getId())
       if (parent) {
         assertThat(log.getSpanContext()).isEqualTo(traces.get(0).get(0).getSpanContext())
+        assertThat(log.getAttributes().get(AttributeKey.stringKey(HELIOS_INSTRUMENTED_INDICATION))).isEqualTo("log4j")
       } else {
         assertThat(log.getSpanContext().isValid()).isFalse()
       }

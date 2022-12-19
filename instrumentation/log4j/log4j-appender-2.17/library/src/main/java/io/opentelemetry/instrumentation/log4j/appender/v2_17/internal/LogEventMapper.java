@@ -10,6 +10,10 @@ import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.LogRecordBuilder;
 import io.opentelemetry.api.logs.Severity;
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
+
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.internal.cache.Cache;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
@@ -83,6 +87,13 @@ public final class LogEventMapper<T> {
       T contextData) {
 
     AttributesBuilder attributes = Attributes.builder();
+
+    Context parentContext = Context.current();
+    SpanContext parentSpanContext = Span.fromContext(parentContext).getSpanContext();
+
+    if (parentSpanContext.isValid()) {
+      attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    }
 
     captureMessage(builder, attributes, message);
 
