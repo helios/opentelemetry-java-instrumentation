@@ -75,7 +75,9 @@ public class PubsubSingletons {
 
     Context context = publisherInstrumenter().start(parentContext, pubsubMessage);
     Span span = Java8BytecodeBridge.spanFromContext(context);
-    span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE, new String(pubsubMessage.getData().toByteArray(), StandardCharsets.UTF_8));
+    span.setAttribute(
+        MESSAGE_PAYLOAD_ATTRIBUTE,
+        new String(pubsubMessage.getData().toByteArray(), StandardCharsets.UTF_8));
     span.setAttribute(SemanticAttributes.MESSAGING_SYSTEM, "pubsub");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION, publisher.getTopicNameString());
@@ -101,7 +103,9 @@ public class PubsubSingletons {
     }
     Context current = subscriberInstrumenter.start(newContext, pubsubMessage);
     Span span = Java8BytecodeBridge.spanFromContext(current);
-    span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE, new String(pubsubMessage.getData().toByteArray(), StandardCharsets.UTF_8));
+    span.setAttribute(
+        MESSAGE_PAYLOAD_ATTRIBUTE,
+        new String(pubsubMessage.getData().toByteArray(), StandardCharsets.UTF_8));
     span.setAttribute(SemanticAttributes.MESSAGING_SYSTEM, "pubsub");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic");
 
