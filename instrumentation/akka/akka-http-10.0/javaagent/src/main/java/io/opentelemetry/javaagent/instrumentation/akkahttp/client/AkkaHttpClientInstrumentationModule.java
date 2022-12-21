@@ -19,12 +19,6 @@ public class AkkaHttpClientInstrumentationModule extends InstrumentationModule {
   }
 
   @Override
-  public boolean isHelperClass(String className) {
-    return className.startsWith("com.opentelemetry.javaagent.instrumentation.akkahttp")
-        || className.startsWith("org.json");
-  }
-
-  @Override
   public List<TypeInstrumentation> typeInstrumentations() {
     return asList(new HttpExtClientInstrumentation(), new PoolMasterActorInstrumentation());
   }

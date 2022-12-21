@@ -10,9 +10,6 @@ import akka.http.scaladsl.model.HttpResponse;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
-import org.json.JSONObject;
 
 public class AkkaHttpUtil {
 
@@ -46,11 +43,6 @@ public class AkkaHttpUtil {
       default:
         return SemanticAttributes.HttpFlavorValues.HTTP_1_1;
     }
-  }
-
-  @Nullable
-  public static String toJsonString(Map<String, String> m) {
-    return new JSONObject(m).toString();
   }
 
   private AkkaHttpUtil() {}
