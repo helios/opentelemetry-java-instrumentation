@@ -25,7 +25,7 @@ public class HeliosSampler implements Sampler {
 
   private final Sampler ratioBasedSampler;
 
-  public HeliosSampler(Double ratio) {
+  public HeliosSampler(double ratio) {
     this.ratioBasedSampler = Sampler.traceIdRatioBased(ratio);
   }
 
@@ -48,7 +48,7 @@ public class HeliosSampler implements Sampler {
           && currentSpan.getSpanContext().isSampled()) {
         return SamplingResult.recordAndSample();
       }
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       logger.log(WARNING, "Got exception when trying to sample span: " + e);
     }
 
