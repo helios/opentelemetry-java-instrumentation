@@ -5,13 +5,13 @@
 
 package io.opentelemetry.instrumentation.log4j.appender.v2_17.internal;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.LogRecordBuilder;
 import io.opentelemetry.api.logs.Severity;
-import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
-
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
@@ -41,6 +41,20 @@ public final class LogEventMapper<T> {
       Cache.bounded(100);
 
   private static final AttributeKey<String> LOG_MARKER = AttributeKey.stringKey("log4j.marker");
+
+  private static boolean heliosInstrumentedIndicator = false;
+  private static void markInstrumentationIndicator(AttributesBuilder attributes) {
+    Context parentContext = Context.current();
+    Span span = Span.fromContext(parentContext);
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    heliosInstrumentedIndicator = true;
+  }
 
   private final ContextDataAccessor<T> contextDataAccessor;
 
@@ -88,12 +102,7 @@ public final class LogEventMapper<T> {
 
     AttributesBuilder attributes = Attributes.builder();
 
-    Context parentContext = Context.current();
-    SpanContext parentSpanContext = Span.fromContext(parentContext).getSpanContext();
-
-    if (parentSpanContext.isValid()) {
-      attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
-    }
+    markInstrumentationIndicator(attributes);
 
     captureMessage(builder, attributes, message);
 

@@ -5,7 +5,8 @@
 
 package io.opentelemetry.instrumentation.logback.appender.v1_0.internal;
 
-import static java.util.Collections.emptyList;
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
