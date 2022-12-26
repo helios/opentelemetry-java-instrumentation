@@ -13,11 +13,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Shared
 
-import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION
-
 abstract class AbstractLogbackTest extends InstrumentationSpecification {
 
   private static final Logger logger = LoggerFactory.getLogger("test")
+  private static isFirstLog = true;
 
   @Shared
   ListAppender<ILoggingEvent> listAppender
@@ -74,6 +73,7 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
     }
 
     def events = listAppender.list
+    def HELIOS_INSTRUMENTED_INDICATION = "heliosLogInstrumented"
 
     then:
     events.size() == 3
@@ -102,9 +102,7 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
       }
       trace(1, 1) {
         span(0) {
-          attributes {
-            "$HELIOS_INSTRUMENTED_INDICATION" "logback"
-          }
+          attributes {}
         }
       }
     }

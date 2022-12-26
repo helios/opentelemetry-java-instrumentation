@@ -32,6 +32,20 @@ import org.apache.log4j.Priority;
 
 public final class LogEventMapper {
 
+  private static boolean heliosInstrumentedIndicator = false;
+  private static void markInstrumentationIndicator(AttributesBuilder attributes) {
+    Context parentContext = Context.current();
+    Span span = Span.fromContext(parentContext);
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    heliosInstrumentedIndicator = true;
+  }
+
   private static final Cache<String, AttributeKey<String>> mdcAttributeKeys = Cache.bounded(100);
 
   public static final LogEventMapper INSTANCE = new LogEventMapper();
@@ -82,12 +96,7 @@ public final class LogEventMapper {
 
     AttributesBuilder attributes = Attributes.builder();
 
-    Context parentContext = Context.current();
-    SpanContext parentSpanContext = Span.fromContext(parentContext).getSpanContext();
-
-    if (parentSpanContext.isValid()) {
-      attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
-    }
+    markInstrumentationIndicator(attributes);
 
     // throwable
     if (throwable != null) {

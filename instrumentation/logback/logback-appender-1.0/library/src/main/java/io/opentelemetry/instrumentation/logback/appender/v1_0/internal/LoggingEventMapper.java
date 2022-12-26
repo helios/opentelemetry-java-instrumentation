@@ -34,6 +34,20 @@ import org.slf4j.Marker;
  */
 public final class LoggingEventMapper {
 
+  private static boolean heliosInstrumentedIndicator = false;
+  private static void markInstrumentationIndicator(AttributesBuilder attributes) {
+    Context parentContext = Context.current();
+    Span span = Span.fromContext(parentContext);
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "logback");
+    heliosInstrumentedIndicator = true;
+  }
+
   private static final Cache<String, AttributeKey<String>> mdcAttributeKeys = Cache.bounded(100);
 
   private static final AttributeKey<String> LOG_MARKER = AttributeKey.stringKey("logback.marker");
@@ -98,12 +112,7 @@ public final class LoggingEventMapper {
 
     AttributesBuilder attributes = Attributes.builder();
 
-    Context parentContext = Context.current();
-    SpanContext parentSpanContext = Span.fromContext(parentContext).getSpanContext();
-
-    if (parentSpanContext.isValid()) {
-      attributes.put(HELIOS_INSTRUMENTED_INDICATION, "logback");
-    }
+    markInstrumentationIndicator(attributes);
 
     // throwable
     Object throwableProxy = loggingEvent.getThrowableProxy();

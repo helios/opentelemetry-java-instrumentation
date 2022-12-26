@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.logback.v1_0;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.SPAN_ID;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_FLAGS;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_ID;
@@ -16,6 +17,7 @@ import ch.qos.logback.core.spi.AppenderAttachable;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
+import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.logback.v1_0.internal.UnionMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,11 +28,27 @@ public class OpenTelemetryAppender extends UnsynchronizedAppenderBase<ILoggingEv
 
   private final AppenderAttachableImpl<ILoggingEvent> aai = new AppenderAttachableImpl<>();
 
+  private static boolean heliosInstrumentedIndicator = false;
+  private static void markInstrumentationIndicator() {
+    Span span = Span.current();
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
+    heliosInstrumentedIndicator = true;
+  }
+
   public static ILoggingEvent wrapEvent(ILoggingEvent event) {
     Span currentSpan = Span.current();
-    if (!currentSpan.getSpanContext().isValid()) {
+    SpanContext spanContext = currentSpan.getSpanContext();
+    if (!spanContext.isValid()) {
       return event;
     }
+
+    markInstrumentationIndicator();
 
     Map<String, String> eventContext = event.getMDCPropertyMap();
     if (eventContext != null && eventContext.containsKey(TRACE_ID)) {
@@ -39,7 +57,6 @@ public class OpenTelemetryAppender extends UnsynchronizedAppenderBase<ILoggingEv
     }
 
     Map<String, String> contextData = new HashMap<>();
-    SpanContext spanContext = currentSpan.getSpanContext();
     contextData.put(TRACE_ID, spanContext.getTraceId());
     contextData.put(SPAN_ID, spanContext.getSpanId());
     contextData.put(TRACE_FLAGS, spanContext.getTraceFlags().asHex());

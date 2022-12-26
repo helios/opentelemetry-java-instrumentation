@@ -15,6 +15,7 @@ import io.opentelemetry.api.trace.SpanContext;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import io.opentelemetry.context.Context;
 import org.apache.logging.log4j.core.util.ContextDataProvider;
 
 /**
@@ -22,6 +23,20 @@ import org.apache.logging.log4j.core.util.ContextDataProvider;
  * #supplyContextData()} is called when a log entry is created.
  */
 public class OpenTelemetryContextDataProvider implements ContextDataProvider {
+
+  private static boolean heliosInstrumentedIndicator = false;
+  private static void markInstrumentationIndicator() {
+    Context parentContext = Context.current();
+    Span span = Span.fromContext(parentContext);
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    heliosInstrumentedIndicator = true;
+  }
 
   /**
    * Returns context from the current span when available.
@@ -35,12 +50,10 @@ public class OpenTelemetryContextDataProvider implements ContextDataProvider {
     if (!currentSpan.getSpanContext().isValid()) {
       return Collections.emptyMap();
     }
+    markInstrumentationIndicator();
 
     Map<String, String> contextData = new HashMap<>();
     SpanContext spanContext = currentSpan.getSpanContext();
-    if (currentSpan.isRecording()) {
-      currentSpan.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j");
-    }
     contextData.put(TRACE_ID, spanContext.getTraceId());
     contextData.put(SPAN_ID, spanContext.getSpanId());
     contextData.put(TRACE_FLAGS, spanContext.getTraceFlags().asHex());

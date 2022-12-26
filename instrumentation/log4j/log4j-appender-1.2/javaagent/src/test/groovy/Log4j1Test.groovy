@@ -26,6 +26,7 @@ class Log4j1Test extends AgentInstrumentationSpecification {
   }
 
   private static final Logger logger = Logger.getLogger("abc")
+  private static isFirstLog = true
 
   @Unroll
   def "test method=#testMethod with exception=#exception and parent=#parent"() {
@@ -52,7 +53,11 @@ class Log4j1Test extends AgentInstrumentationSpecification {
 
     if (parent) {
       waitForTraces(1)
-      heliosAttrsLength++
+
+      if (severity != null && isFirstLog) {
+        heliosAttrsLength++
+        isFirstLog = false
+      }
     }
 
     if (severity != null) {
@@ -81,7 +86,9 @@ class Log4j1Test extends AgentInstrumentationSpecification {
       assertThat(log.getAttributes().get(SemanticAttributes.THREAD_ID)).isEqualTo(Thread.currentThread().getId())
       if (parent) {
         assertThat(log.getSpanContext()).isEqualTo(traces.get(0).get(0).getSpanContext())
-        assertThat(log.getAttributes().get(AttributeKey.stringKey(HELIOS_INSTRUMENTED_INDICATION))).isEqualTo("log4j")
+        if (heliosAttrsLength == 1) {
+          assertThat(log.getAttributes().get(AttributeKey.stringKey(HELIOS_INSTRUMENTED_INDICATION))).isEqualTo("log4j")
+        }
       } else {
         assertThat(log.getSpanContext().isValid()).isFalse()
       }
