@@ -43,6 +43,7 @@ public final class LogEventMapper<T> {
   private static final AttributeKey<String> LOG_MARKER = AttributeKey.stringKey("log4j.marker");
 
   private static boolean heliosInstrumentedIndicator = false;
+
   private static void markInstrumentationIndicator(AttributesBuilder attributes) {
     Context parentContext = Context.current();
     Span span = Span.fromContext(parentContext);

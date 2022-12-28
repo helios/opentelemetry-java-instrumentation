@@ -36,6 +36,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 public class LoggingEventInstrumentation implements TypeInstrumentation {
 
   private static boolean heliosInstrumentedIndicator = false;
+
   private static void markInstrumentationIndicator() {
     Context parentContext = Context.current();
     Span span = Span.fromContext(parentContext);

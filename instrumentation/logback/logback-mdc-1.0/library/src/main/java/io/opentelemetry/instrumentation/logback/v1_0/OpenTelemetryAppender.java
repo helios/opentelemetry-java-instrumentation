@@ -17,7 +17,6 @@ import ch.qos.logback.core.spi.AppenderAttachable;
 import ch.qos.logback.core.spi.AppenderAttachableImpl;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
-import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.logback.v1_0.internal.UnionMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,6 +28,7 @@ public class OpenTelemetryAppender extends UnsynchronizedAppenderBase<ILoggingEv
   private final AppenderAttachableImpl<ILoggingEvent> aai = new AppenderAttachableImpl<>();
 
   private static boolean heliosInstrumentedIndicator = false;
+
   private static void markInstrumentationIndicator() {
     Span span = Span.current();
     SpanContext parentSpanContext = span.getSpanContext();

@@ -12,10 +12,10 @@ import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.T
 
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
+import io.opentelemetry.context.Context;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import io.opentelemetry.context.Context;
 import org.apache.logging.log4j.core.util.ContextDataProvider;
 
 /**
@@ -25,6 +25,7 @@ import org.apache.logging.log4j.core.util.ContextDataProvider;
 public class OpenTelemetryContextDataProvider implements ContextDataProvider {
 
   private static boolean heliosInstrumentedIndicator = false;
+
   private static void markInstrumentationIndicator() {
     Context parentContext = Context.current();
     Span span = Span.fromContext(parentContext);

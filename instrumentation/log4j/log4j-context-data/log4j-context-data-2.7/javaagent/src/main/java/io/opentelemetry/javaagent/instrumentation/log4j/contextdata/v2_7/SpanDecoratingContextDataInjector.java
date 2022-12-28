@@ -24,6 +24,7 @@ import org.apache.logging.log4j.util.StringMap;
 public final class SpanDecoratingContextDataInjector implements ContextDataInjector {
 
   private static boolean heliosInstrumentedIndicator = false;
+
   private static void markInstrumentationIndicator() {
     Context parentContext = Context.current();
     Span span = Span.fromContext(parentContext);
@@ -36,6 +37,7 @@ public final class SpanDecoratingContextDataInjector implements ContextDataInjec
     span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j");
     heliosInstrumentedIndicator = true;
   }
+
   private final ContextDataInjector delegate;
 
   public SpanDecoratingContextDataInjector(ContextDataInjector delegate) {

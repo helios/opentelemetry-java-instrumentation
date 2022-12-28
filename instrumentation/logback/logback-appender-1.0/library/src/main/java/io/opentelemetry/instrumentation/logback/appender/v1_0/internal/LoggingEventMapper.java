@@ -35,6 +35,7 @@ import org.slf4j.Marker;
 public final class LoggingEventMapper {
 
   private static boolean heliosInstrumentedIndicator = false;
+
   private static void markInstrumentationIndicator(AttributesBuilder attributes) {
     Context parentContext = Context.current();
     Span span = Span.fromContext(parentContext);

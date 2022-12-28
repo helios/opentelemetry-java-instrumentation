@@ -33,6 +33,7 @@ import org.apache.log4j.Priority;
 public final class LogEventMapper {
 
   private static boolean heliosInstrumentedIndicator = false;
+
   private static void markInstrumentationIndicator(AttributesBuilder attributes) {
     Context parentContext = Context.current();
     Span span = Span.fromContext(parentContext);
