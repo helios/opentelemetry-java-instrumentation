@@ -48,13 +48,13 @@ public class OpenTelemetryAppender extends UnsynchronizedAppenderBase<ILoggingEv
       return event;
     }
 
-    markInstrumentationIndicator();
-
     Map<String, String> eventContext = event.getMDCPropertyMap();
     if (eventContext != null && eventContext.containsKey(TRACE_ID)) {
       // Assume already instrumented event if traceId is present.
       return event;
     }
+
+    markInstrumentationIndicator();
 
     Map<String, String> contextData = new HashMap<>();
     contextData.put(TRACE_ID, spanContext.getTraceId());

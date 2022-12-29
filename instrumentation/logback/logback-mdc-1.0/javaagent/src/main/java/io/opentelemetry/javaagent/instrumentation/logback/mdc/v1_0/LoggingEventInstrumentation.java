@@ -35,21 +35,6 @@ import net.bytebuddy.matcher.ElementMatcher;
 
 public class LoggingEventInstrumentation implements TypeInstrumentation {
 
-  private static boolean heliosInstrumentedIndicator = false;
-
-  private static void markInstrumentationIndicator() {
-    Context parentContext = Context.current();
-    Span span = Span.fromContext(parentContext);
-    SpanContext parentSpanContext = span.getSpanContext();
-
-    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
-      return;
-    }
-
-    span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
-    heliosInstrumentedIndicator = true;
-  }
-
   @Override
   public ElementMatcher<ClassLoader> classLoaderOptimization() {
     return hasClassesNamed("ch.qos.logback.classic.spi.ILoggingEvent");
@@ -73,6 +58,17 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
   @SuppressWarnings("unused")
   public static class GetMdcAdvice {
 
+    public static boolean heliosInstrumentedIndicator = false;
+
+    public static void markInstrumentationIndicator(Span span, SpanContext spanContext) {
+      if (!span.isRecording() || !spanContext.isValid() || heliosInstrumentedIndicator) {
+        return;
+      }
+
+      span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
+      heliosInstrumentedIndicator = true;
+    }
+
     @Advice.OnMethodExit(suppress = Throwable.class)
     public static void onExit(
         @Advice.This ILoggingEvent event,
@@ -93,7 +89,7 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
         return;
       }
 
-      markInstrumentationIndicator();
+      markInstrumentationIndicator(span, spanContext);
 
       Map<String, String> spanContextData = new HashMap<>();
       spanContextData.put(TRACE_ID, spanContext.getTraceId());

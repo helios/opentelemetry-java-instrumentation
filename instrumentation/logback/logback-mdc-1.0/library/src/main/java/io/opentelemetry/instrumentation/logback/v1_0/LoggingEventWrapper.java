@@ -19,7 +19,6 @@ final class LoggingEventWrapper implements ILoggingEvent {
   @Nullable private final LoggerContextVO vo;
 
   LoggingEventWrapper(ILoggingEvent event, Map<String, String> mdcPropertyMap) {
-    System.out.println("help");
     this.event = event;
     this.mdcPropertyMap = mdcPropertyMap;
 

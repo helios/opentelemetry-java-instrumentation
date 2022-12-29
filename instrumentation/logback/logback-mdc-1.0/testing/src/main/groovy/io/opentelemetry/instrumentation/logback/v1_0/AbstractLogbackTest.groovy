@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.logback.v1_0
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION
+
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.opentelemetry.api.trace.Span
@@ -16,7 +18,6 @@ import spock.lang.Shared
 abstract class AbstractLogbackTest extends InstrumentationSpecification {
 
   private static final Logger logger = LoggerFactory.getLogger("test")
-  private static isFirstLog = true;
 
   @Shared
   ListAppender<ILoggingEvent> listAppender
@@ -73,7 +74,6 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
     }
 
     def events = listAppender.list
-    def HELIOS_INSTRUMENTED_INDICATION = "heliosLogInstrumented"
 
     then:
     events.size() == 3
