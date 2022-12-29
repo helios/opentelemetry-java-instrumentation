@@ -34,7 +34,7 @@ public final class SpanDecoratingContextDataInjector implements ContextDataInjec
       return;
     }
 
-    span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j2");
     heliosInstrumentedIndicator = true;
   }
 

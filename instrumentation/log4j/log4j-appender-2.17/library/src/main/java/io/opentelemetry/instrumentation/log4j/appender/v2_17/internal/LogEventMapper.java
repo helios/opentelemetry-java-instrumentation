@@ -53,7 +53,7 @@ public final class LogEventMapper<T> {
       return;
     }
 
-    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j2");
     heliosInstrumentedIndicator = true;
   }
 

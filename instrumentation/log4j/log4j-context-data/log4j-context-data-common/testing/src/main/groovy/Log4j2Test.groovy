@@ -78,7 +78,7 @@ abstract class Log4j2Test extends InstrumentationSpecification {
       trace(0, 1) {
         span(0) {
           attributes {
-            "heliosLogInstrumented" "log4j"
+            "heliosLogInstrumented" "log4j2"
           }
         }
       }
