@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.logback.v1_0
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION
+
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.opentelemetry.api.trace.Span
@@ -12,8 +14,6 @@ import io.opentelemetry.instrumentation.test.InstrumentationSpecification
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Shared
-
-import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION
 
 abstract class AbstractLogbackTest extends InstrumentationSpecification {
 
@@ -102,9 +102,7 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
       }
       trace(1, 1) {
         span(0) {
-          attributes {
-            "$HELIOS_INSTRUMENTED_INDICATION" "logback"
-          }
+          attributes {}
         }
       }
     }

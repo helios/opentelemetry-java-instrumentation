@@ -34,6 +34,7 @@ import net.bytebuddy.implementation.bytecode.assign.Assigner.Typing;
 import net.bytebuddy.matcher.ElementMatcher;
 
 public class LoggingEventInstrumentation implements TypeInstrumentation {
+
   @Override
   public ElementMatcher<ClassLoader> classLoaderOptimization() {
     return hasClassesNamed("ch.qos.logback.classic.spi.ILoggingEvent");
@@ -57,6 +58,17 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
   @SuppressWarnings("unused")
   public static class GetMdcAdvice {
 
+    public static boolean heliosInstrumentedIndicator = false;
+
+    public static void markInstrumentationIndicator(Span span, SpanContext spanContext) {
+      if (!span.isRecording() || !spanContext.isValid() || heliosInstrumentedIndicator) {
+        return;
+      }
+
+      span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
+      heliosInstrumentedIndicator = true;
+    }
+
     @Advice.OnMethodExit(suppress = Throwable.class)
     public static void onExit(
         @Advice.This ILoggingEvent event,
@@ -77,9 +89,7 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
         return;
       }
 
-      if (span.isRecording()) {
-        span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
-      }
+      markInstrumentationIndicator(span, spanContext);
 
       Map<String, String> spanContextData = new HashMap<>();
       spanContextData.put(TRACE_ID, spanContext.getTraceId());

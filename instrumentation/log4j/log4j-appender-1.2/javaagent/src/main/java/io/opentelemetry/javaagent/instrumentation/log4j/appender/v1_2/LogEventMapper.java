@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.log4j.appender.v1_2;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static java.util.Collections.emptyList;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -13,6 +14,8 @@ import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.GlobalLoggerProvider;
 import io.opentelemetry.api.logs.LogRecordBuilder;
 import io.opentelemetry.api.logs.Severity;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.internal.cache.Cache;
 import io.opentelemetry.javaagent.bootstrap.internal.InstrumentationConfig;
@@ -28,6 +31,21 @@ import org.apache.log4j.MDC;
 import org.apache.log4j.Priority;
 
 public final class LogEventMapper {
+
+  private static boolean heliosInstrumentedIndicator = false;
+
+  private static void markInstrumentationIndicator(AttributesBuilder attributes) {
+    Context parentContext = Context.current();
+    Span span = Span.fromContext(parentContext);
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "log4j");
+    heliosInstrumentedIndicator = true;
+  }
 
   private static final Cache<String, AttributeKey<String>> mdcAttributeKeys = Cache.bounded(100);
 
@@ -78,6 +96,8 @@ public final class LogEventMapper {
     }
 
     AttributesBuilder attributes = Attributes.builder();
+
+    markInstrumentationIndicator(attributes);
 
     // throwable
     if (throwable != null) {
