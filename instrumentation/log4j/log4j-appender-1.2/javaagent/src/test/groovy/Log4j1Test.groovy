@@ -48,7 +48,7 @@ class Log4j1Test extends AgentInstrumentationSpecification {
     }
 
     then:
-    def HELIOS_INSTRUMENTED_INDICATION = "heliosLogInstrumented"
+    def heliosInstrumentedIndication = "heliosLogInstrumented"
     int heliosAttrsLength = 0
 
     if (parent) {
@@ -87,7 +87,7 @@ class Log4j1Test extends AgentInstrumentationSpecification {
       if (parent) {
         assertThat(log.getSpanContext()).isEqualTo(traces.get(0).get(0).getSpanContext())
         if (heliosAttrsLength == 1) {
-          assertThat(log.getAttributes().get(AttributeKey.stringKey(HELIOS_INSTRUMENTED_INDICATION))).isEqualTo("log4j")
+          assertThat(log.getAttributes().get(AttributeKey.stringKey(heliosInstrumentedIndication))).isEqualTo("log4j")
         }
       } else {
         assertThat(log.getSpanContext().isValid()).isFalse()
