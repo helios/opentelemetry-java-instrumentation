@@ -5,7 +5,6 @@
 
 package io.opentelemetry.javaagent.instrumentation.akkahttp.server;
 
-import akka.http.scaladsl.model.HttpHeader;
 import akka.http.scaladsl.model.HttpRequest;
 import akka.http.scaladsl.model.HttpResponse;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpServerAttributesGetter;
@@ -13,10 +12,10 @@ import io.opentelemetry.javaagent.instrumentation.akkahttp.AkkaHttpUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.json.JSONObject;
 import scala.Option;
-import scala.collection.JavaConverters;
 
 class AkkaHttpServerAttributesGetter
     implements HttpServerAttributesGetter<HttpRequest, HttpResponse> {
@@ -35,8 +34,8 @@ class AkkaHttpServerAttributesGetter
   @Nullable
   public String requestHeaders(HttpRequest request, HttpResponse unused) {
     return toJsonString(
-        JavaConverters.seqAsJavaListConverter(request.headers()).asJava().stream()
-            .collect(Collectors.toMap(HttpHeader::name, HttpHeader::value)));
+        StreamSupport.stream(request.getHeaders().spliterator(), false)
+            .collect(Collectors.toMap(akka.http.javadsl.model.HttpHeader::name, akka.http.javadsl.model.HttpHeader::value)));
   }
 
   @Override
@@ -54,8 +53,8 @@ class AkkaHttpServerAttributesGetter
   @Nullable
   public String responseHeaders(HttpRequest unused, HttpResponse httpResponse) {
     return toJsonString(
-        JavaConverters.seqAsJavaListConverter(httpResponse.headers()).asJava().stream()
-            .collect(Collectors.toMap(HttpHeader::name, HttpHeader::value)));
+        StreamSupport.stream(httpResponse.getHeaders().spliterator(), false)
+            .collect(Collectors.toMap(akka.http.javadsl.model.HttpHeader::name, akka.http.javadsl.model.HttpHeader::value)));
   }
 
   @Override
