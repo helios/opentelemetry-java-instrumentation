@@ -92,7 +92,7 @@ public class TomcatHttpAttributesGetter implements HttpServerAttributesGetter<Re
     return toJsonString(mimeHeadersToMap(response.getMimeHeaders()));
   }
 
-  private Map<String, String> mimeHeadersToMap(MimeHeaders headers) {
+  private static Map<String, String> mimeHeadersToMap(MimeHeaders headers) {
     return Collections.list(headers.names()).stream()
         .collect(Collectors.toMap(Function.identity(), headers::getHeader));
   }
