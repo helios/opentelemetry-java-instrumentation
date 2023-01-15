@@ -35,7 +35,10 @@ class AkkaHttpServerAttributesGetter
   public String requestHeaders(HttpRequest request, HttpResponse unused) {
     return toJsonString(
         StreamSupport.stream(request.getHeaders().spliterator(), false)
-            .collect(Collectors.toMap(akka.http.javadsl.model.HttpHeader::name, akka.http.javadsl.model.HttpHeader::value)));
+            .collect(
+                Collectors.toMap(
+                    akka.http.javadsl.model.HttpHeader::name,
+                    akka.http.javadsl.model.HttpHeader::value)));
   }
 
   @Override
@@ -54,7 +57,10 @@ class AkkaHttpServerAttributesGetter
   public String responseHeaders(HttpRequest unused, HttpResponse httpResponse) {
     return toJsonString(
         StreamSupport.stream(httpResponse.getHeaders().spliterator(), false)
-            .collect(Collectors.toMap(akka.http.javadsl.model.HttpHeader::name, akka.http.javadsl.model.HttpHeader::value)));
+            .collect(
+                Collectors.toMap(
+                    akka.http.javadsl.model.HttpHeader::name,
+                    akka.http.javadsl.model.HttpHeader::value)));
   }
 
   @Override
