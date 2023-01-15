@@ -21,4 +21,3 @@ tasks {
     jvmArgs("-Dotel.instrumentation.common.db-statement-sanitizer.enabled=true")
   }
 }
-
