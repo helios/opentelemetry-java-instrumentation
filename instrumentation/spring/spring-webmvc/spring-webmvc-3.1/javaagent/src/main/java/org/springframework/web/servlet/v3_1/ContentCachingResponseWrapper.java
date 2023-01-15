@@ -35,7 +35,7 @@ public class ContentCachingResponseWrapper extends HttpServletResponseWrapper {
     this.statusCode = sc;
   }
 
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("deprecation") //
   @Override
   public void setStatus(int sc, String sm) {
     super.setStatus(sc, sm);

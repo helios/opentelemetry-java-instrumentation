@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -132,10 +133,10 @@ public class ContentCachingRequestWrapper extends HttpServletRequestWrapper {
           List<String> values = Arrays.asList(form.get(name));
           for (Iterator<String> valueIterator = values.iterator(); valueIterator.hasNext(); ) {
             String value = valueIterator.next();
-            this.cachedContent.write(URLEncoder.encode(name, requestEncoding).getBytes());
+            this.cachedContent.write(URLEncoder.encode(name, requestEncoding).getBytes(Charset.defaultCharset()));
             if (value != null) {
               this.cachedContent.write('=');
-              this.cachedContent.write(URLEncoder.encode(value, requestEncoding).getBytes());
+              this.cachedContent.write(URLEncoder.encode(value, requestEncoding).getBytes(Charset.defaultCharset()));
               if (valueIterator.hasNext()) {
                 this.cachedContent.write('&');
               }
@@ -190,7 +191,7 @@ public class ContentCachingRequestWrapper extends HttpServletRequestWrapper {
       this.is = is;
     }
 
-    private void writeToCache(final byte[] b, final int off, int count) {
+    private void writeToCache(byte[] b, int off, int count) {
       if (!this.overflow && count > 0) {
         if (contentCacheLimit != null && count + cachedContent.size() > contentCacheLimit) {
           this.overflow = true;
@@ -224,14 +225,14 @@ public class ContentCachingRequestWrapper extends HttpServletRequestWrapper {
     }
 
     @Override
-    public int read(final byte[] b, final int off, final int len) throws IOException {
+    public int read(byte[] b, int off, int len) throws IOException {
       int count = this.is.read(b, off, len);
       writeToCache(b, off, count);
       return count;
     }
 
     @Override
-    public int readLine(final byte[] b, final int off, final int len) throws IOException {
+    public int readLine(byte[] b, int off, int len) throws IOException {
       int count = this.is.readLine(b, off, len);
       writeToCache(b, off, count);
       return count;

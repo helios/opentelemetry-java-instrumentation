@@ -99,7 +99,7 @@ public class OpenTelemetryHandlerMappingFilter implements Filter, Ordered {
     }
   }
 
-  private void setAttributes(
+  private static void setAttributes(
       ContentCachingRequestWrapper requestWrapper,
       ContentCachingResponseWrapper responseWrapper,
       Context context)
