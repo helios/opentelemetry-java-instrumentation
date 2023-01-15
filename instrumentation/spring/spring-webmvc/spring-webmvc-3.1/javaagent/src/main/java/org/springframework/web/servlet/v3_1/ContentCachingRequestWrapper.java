@@ -133,10 +133,12 @@ public class ContentCachingRequestWrapper extends HttpServletRequestWrapper {
           List<String> values = Arrays.asList(form.get(name));
           for (Iterator<String> valueIterator = values.iterator(); valueIterator.hasNext(); ) {
             String value = valueIterator.next();
-            this.cachedContent.write(URLEncoder.encode(name, requestEncoding).getBytes(Charset.defaultCharset()));
+            this.cachedContent.write(
+                URLEncoder.encode(name, requestEncoding).getBytes(Charset.defaultCharset()));
             if (value != null) {
               this.cachedContent.write('=');
-              this.cachedContent.write(URLEncoder.encode(value, requestEncoding).getBytes(Charset.defaultCharset()));
+              this.cachedContent.write(
+                  URLEncoder.encode(value, requestEncoding).getBytes(Charset.defaultCharset()));
               if (valueIterator.hasNext()) {
                 this.cachedContent.write('&');
               }
