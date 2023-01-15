@@ -177,7 +177,7 @@ class SpringKafkaTest extends AbstractSpringKafkaTest {
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
                             equalTo(SemanticAttributes.MESSAGING_OPERATION, "process"),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "error")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
                             satisfies(
                                 SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES,
                                 AbstractLongAssert::isNotNegative),
