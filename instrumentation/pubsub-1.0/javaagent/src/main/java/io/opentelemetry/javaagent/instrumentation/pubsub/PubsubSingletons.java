@@ -16,8 +16,7 @@ import io.opentelemetry.instrumentation.api.instrumenter.SpanNameExtractor;
 import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class PubsubSingletons {
@@ -52,7 +51,7 @@ public class PubsubSingletons {
   }
 
   private static Instrumenter<PubsubMessage, Void> createPublisherInstrumenter() {
-    SpanNameExtractor publisherSpanNameExtractor = o -> publisherSpanName;
+    SpanNameExtractor<PubsubMessage> publisherSpanNameExtractor = o -> publisherSpanName;
 
     return Instrumenter.<PubsubMessage, Void>builder(
             GlobalOpenTelemetry.get(), instrumentationName, publisherSpanNameExtractor)
@@ -61,7 +60,7 @@ public class PubsubSingletons {
 
   public static Instrumenter<PubsubMessage, Void> createSubscriberInstrumenter() {
 
-    SpanNameExtractor subscriberSpanNameExtractor = o -> subscriberSpanName;
+    SpanNameExtractor<PubsubMessage> subscriberSpanNameExtractor = o -> subscriberSpanName;
 
     return Instrumenter.<PubsubMessage, Void>builder(
             GlobalOpenTelemetry.get(), instrumentationName, subscriberSpanNameExtractor)
@@ -74,12 +73,11 @@ public class PubsubSingletons {
       return;
     }
 
-    Map<String, String> newAttrMap = new HashMap<>();
-    newAttrMap.putAll(pubsubMessage.getAttributesMap());
-
     Context context = publisherInstrumenter().start(parentContext, pubsubMessage);
     Span span = Java8BytecodeBridge.spanFromContext(context);
-    span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE, new String(pubsubMessage.getData().toByteArray()));
+    span.setAttribute(
+        MESSAGE_PAYLOAD_ATTRIBUTE,
+        new String(pubsubMessage.getData().toByteArray(), StandardCharsets.UTF_8));
     span.setAttribute(SemanticAttributes.MESSAGING_SYSTEM, "pubsub");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION, publisher.getTopicNameString());
@@ -105,7 +103,9 @@ public class PubsubSingletons {
     }
     Context current = subscriberInstrumenter.start(newContext, pubsubMessage);
     Span span = Java8BytecodeBridge.spanFromContext(current);
-    span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE, new String(pubsubMessage.getData().toByteArray()));
+    span.setAttribute(
+        MESSAGE_PAYLOAD_ATTRIBUTE,
+        new String(pubsubMessage.getData().toByteArray(), StandardCharsets.UTF_8));
     span.setAttribute(SemanticAttributes.MESSAGING_SYSTEM, "pubsub");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic");
 
@@ -150,7 +150,7 @@ public class PubsubSingletons {
 
   private static Object extractAttributeFromObject(Object object, String fieldName) {
     try {
-      Class cls = object.getClass();
+      Class<?> cls = object.getClass();
       Field field = cls.getDeclaredField(fieldName);
       field.setAccessible(true);
       return field.get(object);

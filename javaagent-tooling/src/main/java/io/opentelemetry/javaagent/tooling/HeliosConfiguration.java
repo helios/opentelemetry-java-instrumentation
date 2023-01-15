@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 public class HeliosConfiguration {
 
+  private HeliosConfiguration() {}
+
   private static final Logger logger = Logger.getLogger(HeliosConfiguration.class.getName());
   public static final String HELIOS_TEST_TRIGGERED_TRACE = "hs-triggered-test";
   public static final String HELIOS_ENVIRONMENT_ENV_VAR = "HS_ENVIRONMENT";
@@ -50,7 +52,7 @@ public class HeliosConfiguration {
       if (ratio != null) {
         return Optional.of(Double.parseDouble(ratio));
       }
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       System.out.println("Exception while getting ratio property: " + e);
     }
 

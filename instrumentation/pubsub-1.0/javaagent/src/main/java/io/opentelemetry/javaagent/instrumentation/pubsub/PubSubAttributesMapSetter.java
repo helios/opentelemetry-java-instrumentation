@@ -17,7 +17,8 @@ public enum PubSubAttributesMapSetter implements TextMapSetter<PubsubMessage> {
   public void set(PubsubMessage carrier, String key, String value) {
     Object carrierAsMap = PubsubSingletons.extractPubsubMessageAttributes(carrier);
     if (!(carrierAsMap instanceof Optional)) {
-      Map<String, String> newAttributes = (Map) carrierAsMap;
+      @SuppressWarnings("unchecked")
+      Map<String, String> newAttributes = (Map<String, String>) carrierAsMap;
       newAttributes.put(key, value);
     }
   }
