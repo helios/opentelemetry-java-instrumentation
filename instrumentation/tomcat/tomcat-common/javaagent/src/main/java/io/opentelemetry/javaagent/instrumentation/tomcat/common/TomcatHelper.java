@@ -84,16 +84,16 @@ public class TomcatHelper<REQUEST, RESPONSE> {
   }
 
   public void attachRequestHeadersToSpan(Request request, Span span) {
-    Map<String, String> requestHeaders = this.extractRequestHeaders(request);
+    Map<String, String> requestHeaders = extractRequestHeaders(request);
     span.setAttribute("http.request.headers", String.valueOf(requestHeaders));
   }
 
   public void attachResponseHeadersToSpan(Response response, Span span) {
-    Map<String, String> responseHeaders = this.extractResponseHeaders(response);
+    Map<String, String> responseHeaders = extractResponseHeaders(response);
     span.setAttribute("http.response.headers", String.valueOf(responseHeaders));
   }
 
-  private Map<String, String> extractRequestHeaders(Request request) {
+  private static Map<String, String> extractRequestHeaders(Request request) {
     Enumeration<String> requestHeaderNames = request.getMimeHeaders().names();
     Map<String, String> requestHeaders = new HashMap<>();
 
@@ -107,7 +107,7 @@ public class TomcatHelper<REQUEST, RESPONSE> {
     return requestHeaders;
   }
 
-  private Map<String, String> extractResponseHeaders(Response response) {
+  private static Map<String, String> extractResponseHeaders(Response response) {
     Map<String, String> responseHeaders = new HashMap<>();
     Enumeration<String> responseHeaderNames = response.getMimeHeaders().names();
     if (responseHeaderNames != null) {
