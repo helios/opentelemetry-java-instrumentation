@@ -10,11 +10,9 @@ import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getEnvironm
 import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHsToken;
 import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getServiceName;
 
-import io.opentelemetry.javaagent.bootstrap.AgentInitializer;
 import io.opentelemetry.javaagent.bootstrap.OpenTelemetrySdkAccess;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk;
-import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdkBuilder;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import java.util.Arrays;
 
