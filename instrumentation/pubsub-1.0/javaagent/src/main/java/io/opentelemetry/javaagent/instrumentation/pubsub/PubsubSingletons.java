@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.pubsub;
 
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getMetadataOnlyMode;
+
 import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.pubsub.v1.PubsubMessage;
@@ -41,10 +43,12 @@ public class PubsubSingletons {
   public static final String subscriberSpanName = "pubsub.subscribe";
   private static final Instrumenter<PubsubMessage, Void> publisherInstrumenter;
   private static final Instrumenter<PubsubMessage, Void> subscriberInstrumenter;
+  private static final boolean metadataOnlyMode;
 
   static {
     publisherInstrumenter = createPublisherInstrumenter();
     subscriberInstrumenter = createSubscriberInstrumenter();
+    metadataOnlyMode = getMetadataOnlyMode();
   }
 
   public static Instrumenter<PubsubMessage, Void> publisherInstrumenter() {
@@ -79,7 +83,9 @@ public class PubsubSingletons {
 
     Context context = publisherInstrumenter().start(parentContext, pubsubMessage);
     Span span = Java8BytecodeBridge.spanFromContext(context);
-    span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE, new String(pubsubMessage.getData().toByteArray()));
+    if (!metadataOnlyMode) {
+      span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE, new String(pubsubMessage.getData().toByteArray()));
+    }
     span.setAttribute(SemanticAttributes.MESSAGING_SYSTEM, "pubsub");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION, publisher.getTopicNameString());
@@ -105,7 +111,10 @@ public class PubsubSingletons {
     }
     Context current = subscriberInstrumenter.start(newContext, pubsubMessage);
     Span span = Java8BytecodeBridge.spanFromContext(current);
-    span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE, new String(pubsubMessage.getData().toByteArray()));
+    if (!metadataOnlyMode) {
+      span.setAttribute(MESSAGE_PAYLOAD_ATTRIBUTE,
+          new String(pubsubMessage.getData().toByteArray()));
+    }
     span.setAttribute(SemanticAttributes.MESSAGING_SYSTEM, "pubsub");
     span.setAttribute(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic");
 

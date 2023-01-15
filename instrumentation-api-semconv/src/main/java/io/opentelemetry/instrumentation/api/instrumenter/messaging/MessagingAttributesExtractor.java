@@ -34,6 +34,7 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
 
   static final String TEMP_DESTINATION_NAME = "(temporary)";
   static final long HS_MAX_PAYLOAD_SIZE = 65536;
+  static final String HELIOS_METADATA_ONLY_ENV_VAR = "HS_METADATA_ONLY";
 
   public static final AttributeKey<String> MESSAGING_PAYLOAD =
       AttributeKey.stringKey("messaging.payload");
@@ -59,6 +60,7 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
   private final MessagingAttributesGetter<REQUEST, RESPONSE> getter;
   private final MessageOperation operation;
   private final List<String> capturedHeaders;
+  private final boolean metadataOnlyMode;
 
   MessagingAttributesExtractor(
       MessagingAttributesGetter<REQUEST, RESPONSE> getter,
@@ -67,6 +69,8 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
     this.getter = getter;
     this.operation = operation;
     this.capturedHeaders = lowercase(capturedHeaders);
+    String metadataOnlyMode = System.getenv(HELIOS_METADATA_ONLY_ENV_VAR);
+    this.metadataOnlyMode = metadataOnlyMode == null ? false : metadataOnlyMode == "true";
   }
 
   @SuppressWarnings("deprecation") // operationName
@@ -101,6 +105,9 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
       internalSet(attributes, SemanticAttributes.MESSAGING_OPERATION, operation.operationName());
     }
 
+    if (metadataOnlyMode) {
+      return;
+    }
     String messagePayload = getter.messagePayload(request);
     if (messagePayload != null && messagePayload.length() <= HS_MAX_PAYLOAD_SIZE) {
       internalSet(attributes, MESSAGING_PAYLOAD, messagePayload);

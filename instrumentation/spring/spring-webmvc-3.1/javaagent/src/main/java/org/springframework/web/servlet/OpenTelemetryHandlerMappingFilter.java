@@ -6,6 +6,7 @@
 package org.springframework.web.servlet;
 
 import static io.opentelemetry.instrumentation.api.instrumenter.http.HttpRouteSource.CONTROLLER;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getMetadataOnlyMode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import io.opentelemetry.api.trace.Span;
@@ -36,6 +37,7 @@ public class OpenTelemetryHandlerMappingFilter implements Filter, Ordered {
   private static final String PATH_ATTRIBUTE = getRequestPathAttribute();
   private static final MethodHandle usesPathPatternsMh = getUsesPathPatternsMh();
   private static final MethodHandle parseAndCacheMh = parseAndCacheMh();
+  private static final boolean metadataOnlyMode = getMetadataOnlyMode();
 
   private final HttpRouteGetter<HttpServletRequest> serverSpanName =
       (context, request) -> {
@@ -104,6 +106,9 @@ public class OpenTelemetryHandlerMappingFilter implements Filter, Ordered {
       throws IOException {
     Span span = Span.fromContext(context);
     requestWrapper.writeRequestParametersToCachedContent();
+    if (metadataOnlyMode) {
+      return;
+    }
     byte[] requestContentAsByteArray = requestWrapper.getContentAsByteArray();
     if (requestContentAsByteArray != null && requestContentAsByteArray.length > 0) {
       span.setAttribute("http.request.body", new String(requestContentAsByteArray, UTF_8));
