@@ -8,6 +8,7 @@ package io.opentelemetry.instrumentation.rocketmqclient.v4_8
 import io.opentelemetry.instrumentation.rocketmqclient.v4_8.base.BaseConf
 import io.opentelemetry.instrumentation.test.InstrumentationSpecification
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes
+
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer
@@ -110,6 +111,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "$SemanticAttributes.MESSAGING_ROCKETMQ_MESSAGE_TAG" "TagA"
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.send_result" "SEND_OK"
+            "messaging.payload" String
           }
         }
         span(1) {
@@ -127,6 +129,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.queue_id" Long
             "messaging.rocketmq.queue_offset" Long
+            "messaging.payload" String
           }
         }
         span(2) {
@@ -166,6 +169,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "$SemanticAttributes.MESSAGING_ROCKETMQ_MESSAGE_TAG" "TagA"
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.send_result" "SEND_OK"
+            "messaging.payload" String
           }
         }
         span(2) {
@@ -183,6 +187,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.queue_id" Long
             "messaging.rocketmq.queue_offset" Long
+            "messaging.payload" String
           }
         }
         span(3) {
@@ -243,6 +248,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "$SemanticAttributes.MESSAGING_MESSAGE_ID" String
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.send_result" "SEND_OK"
+            "messaging.payload" String
           }
         }
       }
@@ -270,6 +276,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.queue_id" Long
             "messaging.rocketmq.queue_offset" Long
+            "messaging.payload" String
           }
           childOf span(0)
           hasLink producerSpan
@@ -288,6 +295,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.queue_id" Long
             "messaging.rocketmq.queue_offset" Long
+            "messaging.payload" String
           }
           childOf span(0)
           hasLink producerSpan
@@ -332,6 +340,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.broker_address" String
             "messaging.rocketmq.send_result" "SEND_OK"
             "messaging.header.test_message_header" { it == ["test"] }
+            "messaging.payload" "Hello RocketMQ"
           }
         }
         span(2) {
@@ -350,6 +359,7 @@ abstract class AbstractRocketMqClientTest extends InstrumentationSpecification {
             "messaging.rocketmq.queue_id" Long
             "messaging.rocketmq.queue_offset" Long
             "messaging.header.test_message_header" { it == ["test"] }
+            "messaging.payload" "Hello RocketMQ"
           }
         }
         span(3) {

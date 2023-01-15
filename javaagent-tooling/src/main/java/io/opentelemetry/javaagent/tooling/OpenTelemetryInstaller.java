@@ -5,9 +5,16 @@
 
 package io.opentelemetry.javaagent.tooling;
 
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getCollectorEndpoint;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getEnvironmentName;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getHsToken;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getServiceName;
+
+import io.opentelemetry.javaagent.bootstrap.AgentInitializer;
 import io.opentelemetry.javaagent.bootstrap.OpenTelemetrySdkAccess;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk;
+import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdkBuilder;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import java.util.Arrays;
 
@@ -22,12 +29,16 @@ public final class OpenTelemetryInstaller {
   public static AutoConfiguredOpenTelemetrySdk installOpenTelemetrySdk(
       ClassLoader extensionClassLoader) {
 
+    setHeliosSystemProperties();
+
     AutoConfiguredOpenTelemetrySdk autoConfiguredSdk =
         AutoConfiguredOpenTelemetrySdk.builder()
             .setResultAsGlobal(true)
             .setServiceClassLoader(extensionClassLoader)
             .build();
     OpenTelemetrySdk sdk = autoConfiguredSdk.getOpenTelemetrySdk();
+
+    printInitializationMessage();
 
     OpenTelemetrySdkAccess.internalSetForceFlush(
         (timeout, unit) -> {
@@ -39,6 +50,30 @@ public final class OpenTelemetryInstaller {
         });
 
     return autoConfiguredSdk;
+  }
+
+  static void setHeliosSystemProperties() {
+    String hsToken = getHsToken();
+
+    if (hsToken != null) {
+      System.setProperty("otel.exporter.otlp.headers", String.format("Authorization=%s", hsToken));
+      System.setProperty("otel.exporter.otlp.traces.endpoint", getCollectorEndpoint());
+      System.setProperty("otel.exporter.otlp.traces.protocol", "http/protobuf");
+    }
+  }
+
+  static void printInitializationMessage() {
+    String hsToken = getHsToken();
+    if (hsToken != null) {
+      String serviceName = getServiceName();
+      String environmentName = getEnvironmentName();
+      if (serviceName != null) {
+        System.out.println(
+            String.format(
+                "Helios tracing initialized (service: %1$s, token: %2$s*****, environment: %3$s)",
+                serviceName, hsToken.substring(0, 3), environmentName));
+      }
+    }
   }
 
   private OpenTelemetryInstaller() {}

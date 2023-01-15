@@ -6,7 +6,9 @@
 package org.springframework.web.servlet.v3_1;
 
 import static io.opentelemetry.instrumentation.api.instrumenter.http.HttpRouteSource.CONTROLLER;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpRouteGetter;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpRouteHolder;
@@ -79,14 +81,39 @@ public class OpenTelemetryHandlerMappingFilter implements Filter, Ordered {
       return;
     }
 
+    ContentCachingResponseWrapper responseWrapper =
+        new ContentCachingResponseWrapper((HttpServletResponse) response);
+
+    ContentCachingRequestWrapper requestWrapper =
+        new ContentCachingRequestWrapper((HttpServletRequest) request);
+
     try {
-      filterChain.doFilter(request, response);
+      filterChain.doFilter(requestWrapper, responseWrapper);
     } finally {
       if (handlerMappings != null) {
         Context context = Context.current();
+        setAttributes(requestWrapper, responseWrapper, context);
         HttpRouteHolder.updateHttpRoute(
             context, CONTROLLER, serverSpanName, (HttpServletRequest) request);
       }
+    }
+  }
+
+  private void setAttributes(
+      ContentCachingRequestWrapper requestWrapper,
+      ContentCachingResponseWrapper responseWrapper,
+      Context context)
+      throws IOException {
+    Span span = Span.fromContext(context);
+    requestWrapper.writeRequestParametersToCachedContent();
+    byte[] requestContentAsByteArray = requestWrapper.getContentAsByteArray();
+    if (requestContentAsByteArray != null && requestContentAsByteArray.length > 0) {
+      span.setAttribute("http.request.body", new String(requestContentAsByteArray, UTF_8));
+    }
+    byte[] responseContentAsByteArray = responseWrapper.getContentAsByteArray();
+    if (responseContentAsByteArray != null && responseContentAsByteArray.length > 0) {
+      span.setAttribute("http.response.body", new String(responseContentAsByteArray, UTF_8));
+      responseWrapper.copyBodyToResponse();
     }
   }
 

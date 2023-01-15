@@ -8,9 +8,14 @@ package io.opentelemetry.javaagent.instrumentation.undertow;
 import io.opentelemetry.instrumentation.api.instrumenter.http.HttpServerAttributesGetter;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderValues;
+import io.undertow.util.HttpString;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.json.JSONObject;
 
 public class UndertowHttpAttributesGetter
     implements HttpServerAttributesGetter<HttpServerExchange, HttpServerExchange> {
@@ -24,6 +29,33 @@ public class UndertowHttpAttributesGetter
   public List<String> requestHeader(HttpServerExchange exchange, String name) {
     HeaderValues values = exchange.getRequestHeaders().get(name);
     return values == null ? Collections.emptyList() : values;
+  }
+
+  private static String firstListValue(List<String> values) {
+    return values.isEmpty() ? "" : values.get(0);
+  }
+
+  @Override
+  @Nullable
+  public String requestHeaders(HttpServerExchange exchange, HttpServerExchange unused) {
+    return toJsonString(
+        exchange.getRequestHeaders().getHeaderNames().stream()
+            .map(HttpString::toString)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(), (h) -> firstListValue(requestHeader(exchange, h)))));
+  }
+
+  @Override
+  @Nullable
+  public String responseHeaders(HttpServerExchange unused, HttpServerExchange exchange) {
+    return toJsonString(
+        exchange.getResponseHeaders().getHeaderNames().stream()
+            .map(HttpString::toString)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    (h) -> firstListValue(responseHeader(exchange, exchange, h)))));
   }
 
   @Override
@@ -70,5 +102,10 @@ public class UndertowHttpAttributesGetter
   @Nullable
   public String route(HttpServerExchange exchange) {
     return null;
+  }
+
+  @Nullable
+  static String toJsonString(Map<String, String> m) {
+    return new JSONObject(m).toString();
   }
 }

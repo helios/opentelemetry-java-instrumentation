@@ -97,6 +97,7 @@ class KafkaStreamsSuppressReceiveSpansTest extends KafkaStreamsBaseTest {
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "topic"
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" { it >= 0 }
             "messaging.kafka.message.offset" 0
+            "messaging.payload" greeting
           }
         }
         // kafka-stream CONSUMER
@@ -114,6 +115,7 @@ class KafkaStreamsSuppressReceiveSpansTest extends KafkaStreamsBaseTest {
             "messaging.kafka.message.offset" 0
             "kafka.record.queue_time_ms" { it >= 0 }
             "asdf" "testing"
+            "messaging.payload" greeting
           }
         }
 
@@ -130,6 +132,7 @@ class KafkaStreamsSuppressReceiveSpansTest extends KafkaStreamsBaseTest {
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "topic"
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" { it >= 0 }
             "messaging.kafka.message.offset" 0
+            "messaging.payload" greeting.toLowerCase()
           }
         }
         // kafka-clients CONSUMER process
@@ -147,6 +150,7 @@ class KafkaStreamsSuppressReceiveSpansTest extends KafkaStreamsBaseTest {
             "messaging.kafka.message.offset" 0
             "kafka.record.queue_time_ms" { it >= 0 }
             "testing" 123
+            "messaging.payload" greeting.toLowerCase()
           }
         }
       }

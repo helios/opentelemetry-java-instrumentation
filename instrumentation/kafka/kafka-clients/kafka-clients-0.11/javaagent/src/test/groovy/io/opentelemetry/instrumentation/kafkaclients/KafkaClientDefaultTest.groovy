@@ -73,6 +73,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" greeting
           }
         }
         span(2) {
@@ -115,6 +116,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" greeting
           }
         }
         span(2) {
@@ -160,6 +162,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             "$SemanticAttributes.MESSAGING_KAFKA_TOMBSTONE" true
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" { it >= 0 }
             "messaging.kafka.message.offset" { it >= 0 }
+            "messaging.payload" String
           }
         }
 
@@ -192,6 +195,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" { it >= 0 }
             "messaging.kafka.message.offset" { it >= 0 }
             "kafka.record.queue_time_ms" { it >= 0 }
+            "messaging.payload" String
           }
         }
       }
@@ -238,6 +242,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "topic"
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" partition
             "messaging.kafka.message.offset" { it >= 0 }
+            "messaging.payload" greeting
           }
         }
 
@@ -269,6 +274,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" partition
             "messaging.kafka.message.offset" { it >= 0 }
             "kafka.record.queue_time_ms" { it >= 0 }
+            "messaging.payload" greeting
           }
         }
       }

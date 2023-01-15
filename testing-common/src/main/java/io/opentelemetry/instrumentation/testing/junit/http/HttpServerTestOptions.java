@@ -50,7 +50,9 @@ public final class HttpServerTestOptions {
   boolean testNotFound = true;
   boolean testPathParam = false;
   boolean testCaptureHttpHeaders = true;
+  boolean testCaptureHttpHeadersAsJson = false;
   boolean testCaptureRequestParameters = false;
+  boolean testCaptureBody = false;
 
   HttpServerTestOptions() {}
 
@@ -160,10 +162,21 @@ public final class HttpServerTestOptions {
     return this;
   }
 
+  public HttpServerTestOptions setTestCaptureHttpHeadersAsJson(
+      boolean testCaptureHttpHeadersAsJson) {
+    this.testCaptureHttpHeadersAsJson = testCaptureHttpHeadersAsJson;
+    return this;
+  }
+
   @CanIgnoreReturnValue
   public HttpServerTestOptions setTestCaptureRequestParameters(
       boolean testCaptureRequestParameters) {
     this.testCaptureRequestParameters = testCaptureRequestParameters;
+    return this;
+  }
+
+  public HttpServerTestOptions setTestCaptureBody(boolean testCaptureBody) {
+    this.testCaptureBody = testCaptureBody;
     return this;
   }
 }

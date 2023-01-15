@@ -35,4 +35,5 @@ tasks.withType<Test>().configureEach {
   jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
   jvmArgs("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED")
   jvmArgs("-XX:+IgnoreUnrecognizedVMOptions")
+  jvmArgs("-Dotel.instrumentation.common.db-statement-sanitizer.enabled=true")
 }

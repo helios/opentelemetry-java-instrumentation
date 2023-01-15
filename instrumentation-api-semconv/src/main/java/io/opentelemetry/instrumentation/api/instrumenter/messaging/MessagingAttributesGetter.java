@@ -60,4 +60,9 @@ public interface MessagingAttributesGetter<REQUEST, RESPONSE> {
   default List<String> header(REQUEST request, String name) {
     return Collections.emptyList();
   }
+
+  @Nullable
+  default String messagePayload(REQUEST request) {
+    return null;
+  }
 }
