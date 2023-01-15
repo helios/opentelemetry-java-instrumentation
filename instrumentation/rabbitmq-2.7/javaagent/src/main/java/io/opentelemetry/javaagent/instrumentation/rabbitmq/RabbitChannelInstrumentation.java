@@ -10,6 +10,7 @@ import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.
 import static io.opentelemetry.javaagent.instrumentation.rabbitmq.RabbitCommandInstrumentation.SpanHolder.CURRENT_RABBIT_CONTEXT;
 import static io.opentelemetry.javaagent.instrumentation.rabbitmq.RabbitInstrumenterHelper.helper;
 import static io.opentelemetry.javaagent.instrumentation.rabbitmq.RabbitSingletons.channelInstrumenter;
+import static io.opentelemetry.javaagent.instrumentation.rabbitmq.RabbitSingletons.metadataOnlyMode;
 import static io.opentelemetry.javaagent.instrumentation.rabbitmq.RabbitSingletons.receiveInstrumenter;
 import static net.bytebuddy.matcher.ElementMatchers.canThrow;
 import static net.bytebuddy.matcher.ElementMatchers.isGetter;
@@ -150,7 +151,7 @@ public class RabbitChannelInstrumentation implements TypeInstrumentation {
 
       if (span.getSpanContext().isValid()) {
         helper().onPublish(span, exchange, routingKey);
-        if (body != null) {
+        if (!metadataOnlyMode && body != null) {
           span.setAttribute(
               SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES, (long) body.length);
           span.setAttribute("messaging.payload", new String(body, StandardCharsets.UTF_8));

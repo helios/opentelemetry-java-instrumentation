@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.pubsub;
 
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getMetadataOnlyMode;
+
 import com.google.pubsub.v1.PubsubMessage;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -26,10 +28,12 @@ public class PubsubSingletons {
   public static final String subscriberSpanName = "pubsub.subscribe";
   private static final Instrumenter<PubsubMessage, Void> publisherInstrumenter;
   private static final Instrumenter<PubsubMessage, Void> subscriberInstrumenter;
+  private static final boolean metadataOnlyMode;
 
   static {
     publisherInstrumenter = createPublisherInstrumenter();
     subscriberInstrumenter = createSubscriberInstrumenter();
+    metadataOnlyMode = getMetadataOnlyMode();
   }
 
   public static Instrumenter<PubsubMessage, Void> publisherInstrumenter() {
@@ -75,7 +79,9 @@ public class PubsubSingletons {
 
     Context context = publisherInstrumenter().start(parentContext, pubsubMessage);
     Span span = Java8BytecodeBridge.spanFromContext(context);
-    span.setAttribute("messaging.payload", new String(pubsubMessage.getData().toByteArray()));
+    if (!metadataOnlyMode) {
+      span.setAttribute("messaging.payload", new String(pubsubMessage.getData().toByteArray()));
+    }
     GlobalOpenTelemetry.get()
         .getPropagators()
         .getTextMapPropagator()

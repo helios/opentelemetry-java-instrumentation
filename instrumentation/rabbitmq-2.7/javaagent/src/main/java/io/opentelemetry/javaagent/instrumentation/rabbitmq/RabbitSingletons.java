@@ -7,6 +7,7 @@ package io.opentelemetry.javaagent.instrumentation.rabbitmq;
 
 import static io.opentelemetry.api.trace.SpanKind.CLIENT;
 import static io.opentelemetry.api.trace.SpanKind.PRODUCER;
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getMetadataOnlyMode;
 
 import com.rabbitmq.client.GetResponse;
 import io.opentelemetry.api.GlobalOpenTelemetry;
@@ -36,6 +37,7 @@ public final class RabbitSingletons {
       createReceiveInstrumenter();
   private static final Instrumenter<DeliveryRequest, Void> deliverInstrumenter =
       createDeliverInstrumenter();
+  private static final boolean metadataOnlyMode = getMetadataOnlyMode();
   static final ContextKey<RabbitChannelAndMethodHolder> CHANNEL_AND_METHOD_CONTEXT_KEY =
       ContextKey.named("opentelemetry-rabbitmq-channel-and-method-context-key");
 

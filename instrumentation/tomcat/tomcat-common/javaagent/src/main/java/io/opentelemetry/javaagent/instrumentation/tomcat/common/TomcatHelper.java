@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.tomcat.common;
 
+import static io.opentelemetry.javaagent.tooling.HeliosConfiguration.getMetadataOnlyMode;
+
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
@@ -22,6 +24,7 @@ public class TomcatHelper<REQUEST, RESPONSE> {
   protected final Instrumenter<Request, Response> instrumenter;
   protected final TomcatServletEntityProvider<REQUEST, RESPONSE> servletEntityProvider;
   private final ServletHelper<REQUEST, RESPONSE> servletHelper;
+  private final boolean metadataOnlyMode;
 
   public TomcatHelper(
       Instrumenter<Request, Response> instrumenter,
@@ -30,6 +33,7 @@ public class TomcatHelper<REQUEST, RESPONSE> {
     this.instrumenter = instrumenter;
     this.servletEntityProvider = servletEntityProvider;
     this.servletHelper = servletHelper;
+    this.metadataOnlyMode = getMetadataOnlyMode();
   }
 
   public boolean shouldStart(Context parentContext, Request request) {
@@ -84,11 +88,17 @@ public class TomcatHelper<REQUEST, RESPONSE> {
   }
 
   public void attachRequestHeadersToSpan(Request request, Span span) {
+    if (metadataOnlyMode) {
+      return;
+    }
     Map<String, String> requestHeaders = this.extractRequestHeaders(request);
     span.setAttribute("http.request.headers", String.valueOf(requestHeaders));
   }
 
   public void attachResponseHeadersToSpan(Response response, Span span) {
+    if (metadataOnlyMode) {
+      return;
+    }
     Map<String, String> responseHeaders = this.extractResponseHeaders(response);
     span.setAttribute("http.response.headers", String.valueOf(responseHeaders));
   }

@@ -17,6 +17,7 @@ public class HeliosConfiguration {
   public static final String HELIOS_ENVIRONMENT_ENV_VAR = "HS_ENVIRONMENT";
   public static final String HELIOS_SERVICE_NAME_ENV_VAR = "HS_SERVICE_NAME";
   public static final String HELIOS_TOKEN_ENV_VAR = "HS_TOKEN";
+  public static final String HELIOS_METADATA_ONLY_ENV_VAR = "HS_METADATA_ONLY";
   public static final String HELIOS_COLLECTOR_ENDPOINT_ENV_VAR = "HS_COLLECTOR_ENDPOINT";
   public static final String DEFAULT_COLLECTOR_ENDPOINT = "https://collector.heliosphere.io/traces";
 
@@ -39,6 +40,11 @@ public class HeliosConfiguration {
   public static String getCollectorEndpoint() {
     String result = System.getenv(HELIOS_COLLECTOR_ENDPOINT_ENV_VAR);
     return result == null ? DEFAULT_COLLECTOR_ENDPOINT : result;
+  }
+
+  public static boolean getMetadataOnlyMode() {
+    String metadataOnlyMode = System.getenv(HELIOS_METADATA_ONLY_ENV_VAR);
+    return metadataOnlyMode == null ? false : metadataOnlyMode == "true";
   }
 
   public static Optional<Double> getHeliosSamplingRatioProperty() {
