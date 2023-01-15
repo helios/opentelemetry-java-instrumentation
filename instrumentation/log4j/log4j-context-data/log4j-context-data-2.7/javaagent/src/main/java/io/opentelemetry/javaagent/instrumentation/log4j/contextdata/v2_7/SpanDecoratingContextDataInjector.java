@@ -12,6 +12,7 @@ import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.T
 
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
+import io.opentelemetry.context.Context;
 import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
 import java.util.List;
 import org.apache.logging.log4j.core.ContextDataInjector;
@@ -21,6 +22,22 @@ import org.apache.logging.log4j.util.SortedArrayStringMap;
 import org.apache.logging.log4j.util.StringMap;
 
 public final class SpanDecoratingContextDataInjector implements ContextDataInjector {
+
+  private static boolean heliosInstrumentedIndicator = false;
+
+  private static void markInstrumentationIndicator() {
+    Context parentContext = Context.current();
+    Span span = Span.fromContext(parentContext);
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j2");
+    heliosInstrumentedIndicator = true;
+  }
+
   private final ContextDataInjector delegate;
 
   public SpanDecoratingContextDataInjector(ContextDataInjector delegate) {
@@ -42,9 +59,7 @@ public final class SpanDecoratingContextDataInjector implements ContextDataInjec
       return contextData;
     }
 
-    if (span.isRecording()) {
-      span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "log4j");
-    }
+    markInstrumentationIndicator();
 
     StringMap newContextData = new SortedArrayStringMap(contextData);
     newContextData.putValue(TRACE_ID, currentContext.getTraceId());
