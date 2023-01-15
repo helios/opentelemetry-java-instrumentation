@@ -162,6 +162,7 @@ public final class HttpServerTestOptions {
     return this;
   }
 
+  @CanIgnoreReturnValue
   public HttpServerTestOptions setTestCaptureHttpHeadersAsJson(
       boolean testCaptureHttpHeadersAsJson) {
     this.testCaptureHttpHeadersAsJson = testCaptureHttpHeadersAsJson;
@@ -175,6 +176,7 @@ public final class HttpServerTestOptions {
     return this;
   }
 
+  @CanIgnoreReturnValue
   public HttpServerTestOptions setTestCaptureBody(boolean testCaptureBody) {
     this.testCaptureBody = testCaptureBody;
     return this;
