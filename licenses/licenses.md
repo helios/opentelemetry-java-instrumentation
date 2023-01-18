@@ -1,7 +1,7 @@
 
 #javaagent
 ##Dependency License Report
-_2023-01-09 13:08:03 CET_
+_2023-01-17 19:49:28 PST_
 ## Apache License, Version 2.0
 
 **1** **Group:** `com.blogspot.mydailyjava` **Name:** `weak-lock-free` **Version:** `0.18`
@@ -133,7 +133,7 @@ _2023-01-09 13:08:03 CET_
 > - **POM Project URL**: [https://github.com/open-telemetry/opentelemetry-java](https://github.com/open-telemetry/opentelemetry-java)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-**31** **Group:** `io.opentelemetry.contrib` **Name:** `opentelemetry-aws-xray-propagator` **Version:** `1.21.0-alpha`
+**31** **Group:** `io.opentelemetry.contrib` **Name:** `opentelemetry-aws-xray-propagator` **Version:** `1.22.0-alpha`
 > - **POM Project URL**: [https://github.com/open-telemetry/opentelemetry-java-contrib](https://github.com/open-telemetry/opentelemetry-java-contrib)
 > - **POM License**: Apache License, Version 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -155,10 +155,10 @@ _2023-01-09 13:08:03 CET_
 > - **POM License**: Apache License, Version 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 > - **Embedded license files**: [zipkin-2.23.2.jar/META-INF/LICENSE](zipkin-2.23.2.jar/META-INF/LICENSE)
 
-**35** **Group:** `net.bytebuddy` **Name:** `byte-buddy-dep` **Version:** `1.12.20`
+**35** **Group:** `net.bytebuddy` **Name:** `byte-buddy-dep` **Version:** `1.12.22`
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
-> - **Embedded license files**: [byte-buddy-dep-1.12.20.jar/META-INF/LICENSE](byte-buddy-dep-1.12.20.jar/META-INF/LICENSE)
-    - [byte-buddy-dep-1.12.20.jar/META-INF/NOTICE](byte-buddy-dep-1.12.20.jar/META-INF/NOTICE)
+> - **Embedded license files**: [byte-buddy-dep-1.12.22.jar/META-INF/LICENSE](byte-buddy-dep-1.12.22.jar/META-INF/LICENSE)
+    - [byte-buddy-dep-1.12.22.jar/META-INF/NOTICE](byte-buddy-dep-1.12.22.jar/META-INF/NOTICE)
 
 **36** **Group:** `org.jetbrains` **Name:** `annotations` **Version:** `13.0`
 > - **POM Project URL**: [http://www.jetbrains.org](http://www.jetbrains.org)
