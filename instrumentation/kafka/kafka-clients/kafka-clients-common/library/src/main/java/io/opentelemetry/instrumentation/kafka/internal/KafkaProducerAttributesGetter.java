@@ -95,7 +95,7 @@ enum KafkaProducerAttributesGetter
 
   @Nullable
   @Override
-  public String messagePayload(ProducerRecord<?, ?> producerRecord) {
+  public String getMessagePayload(ProducerRecord<?, ?> producerRecord) {
     if (producerRecord.value() instanceof byte[]) {
       return new String((byte[]) producerRecord.value(), StandardCharsets.UTF_8);
     }

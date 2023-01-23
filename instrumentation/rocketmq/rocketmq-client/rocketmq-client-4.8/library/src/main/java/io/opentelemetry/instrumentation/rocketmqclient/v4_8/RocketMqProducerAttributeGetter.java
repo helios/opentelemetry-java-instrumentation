@@ -95,7 +95,7 @@ enum RocketMqProducerAttributeGetter
 
   @Nullable
   @Override
-  public String messagePayload(SendMessageContext sendMessageContext) {
+  public String getMessagePayload(SendMessageContext sendMessageContext) {
     Message message = sendMessageContext.getMessage();
     if (message == null) {
       return null;

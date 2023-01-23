@@ -91,7 +91,7 @@ enum RabbitDeliveryAttributesGetter implements MessagingAttributesGetter<Deliver
 
   @Nullable
   @Override
-  public String messagePayload(DeliveryRequest request) {
+  public String getMessagePayload(DeliveryRequest request) {
     byte[] body = request.getBody();
     if (body != null) {
       return new String(body, StandardCharsets.UTF_8);

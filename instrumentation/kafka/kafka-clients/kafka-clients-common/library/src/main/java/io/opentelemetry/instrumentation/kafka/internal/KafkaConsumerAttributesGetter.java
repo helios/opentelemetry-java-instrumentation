@@ -92,7 +92,7 @@ public enum KafkaConsumerAttributesGetter
 
   @Nullable
   @Override
-  public String messagePayload(ConsumerRecord<?, ?> consumerRecord) {
+  public String getMessagePayload(ConsumerRecord<?, ?> consumerRecord) {
     return String.valueOf(consumerRecord.value());
   }
 }

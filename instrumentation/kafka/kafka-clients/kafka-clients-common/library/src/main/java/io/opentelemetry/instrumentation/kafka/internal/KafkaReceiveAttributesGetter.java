@@ -104,7 +104,7 @@ public enum KafkaReceiveAttributesGetter
 
   @Nullable
   @Override
-  public String messagePayload(ConsumerRecords<?, ?> consumerRecords) {
+  public String getMessagePayload(ConsumerRecords<?, ?> consumerRecords) {
     return null;
   }
 }

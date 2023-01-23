@@ -91,7 +91,7 @@ enum SpringMessagingAttributesGetter
 
   @Nullable
   @Override
-  public String messagePayload(MessageWithChannel messageWithChannel) {
+  public String getMessagePayload(MessageWithChannel messageWithChannel) {
     return null;
   }
 }

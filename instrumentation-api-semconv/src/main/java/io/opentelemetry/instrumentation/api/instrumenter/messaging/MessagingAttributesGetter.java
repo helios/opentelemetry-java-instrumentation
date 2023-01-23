@@ -232,7 +232,7 @@ public interface MessagingAttributesGetter<REQUEST, RESPONSE> {
   }
 
   @Nullable
-  default String messagePayload(REQUEST request) {
+  default String getMessagePayload(REQUEST request) {
     return null;
   }
 }

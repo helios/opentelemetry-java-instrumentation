@@ -90,7 +90,7 @@ enum RabbitReceiveAttributesGetter
 
   @Nullable
   @Override
-  public String messagePayload(ReceiveRequest receiveRequest) {
+  public String getMessagePayload(ReceiveRequest receiveRequest) {
     GetResponse response = receiveRequest.getResponse();
     if (response == null) {
       return null;

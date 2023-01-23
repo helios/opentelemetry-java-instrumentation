@@ -88,7 +88,7 @@ enum SpringRabbitMessageAttributesGetter implements MessagingAttributesGetter<Me
 
   @Nullable
   @Override
-  public String messagePayload(Message message) {
+  public String getMessagePayload(Message message) {
     if (message == null) {
       return null;
     }

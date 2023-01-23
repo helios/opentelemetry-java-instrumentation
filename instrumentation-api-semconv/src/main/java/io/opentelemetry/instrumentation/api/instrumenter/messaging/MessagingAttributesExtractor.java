@@ -107,7 +107,7 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
       internalSet(attributes, SemanticAttributes.MESSAGING_OPERATION, operation.operationName());
     }
 
-    String messagePayload = getter.messagePayload(request);
+    String messagePayload = getter.getMessagePayload(request);
     if (messagePayload != null && messagePayload.length() <= HS_MAX_PAYLOAD_SIZE) {
       internalSet(attributes, MESSAGING_PAYLOAD, messagePayload);
     }

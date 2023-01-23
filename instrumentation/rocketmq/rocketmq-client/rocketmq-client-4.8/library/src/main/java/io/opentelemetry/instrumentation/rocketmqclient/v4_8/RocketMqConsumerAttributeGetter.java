@@ -90,7 +90,7 @@ enum RocketMqConsumerAttributeGetter implements MessagingAttributesGetter<Messag
 
   @Nullable
   @Override
-  public String messagePayload(MessageExt messageExt) {
+  public String getMessagePayload(MessageExt messageExt) {
     return new String(messageExt.getBody(), StandardCharsets.UTF_8);
   }
 }
