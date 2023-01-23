@@ -21,18 +21,18 @@ class AkkaHttpServerAttributesGetter
     implements HttpServerAttributesGetter<HttpRequest, HttpResponse> {
 
   @Override
-  public String method(HttpRequest request) {
+  public String getMethod(HttpRequest request) {
     return request.method().value();
   }
 
   @Override
-  public List<String> requestHeader(HttpRequest request, String name) {
+  public List<String> getRequestHeader(HttpRequest request, String name) {
     return AkkaHttpUtil.requestHeader(request, name);
   }
 
   @Override
   @Nullable
-  public String requestHeaders(HttpRequest request, HttpResponse unused) {
+  public String getRequestHeaders(HttpRequest request) {
     return toJsonString(
         StreamSupport.stream(request.getHeaders().spliterator(), false)
             .collect(
@@ -42,19 +42,20 @@ class AkkaHttpServerAttributesGetter
   }
 
   @Override
-  public Integer statusCode(
+  public Integer getStatusCode(
       HttpRequest request, HttpResponse httpResponse, @Nullable Throwable error) {
     return httpResponse.status().intValue();
   }
 
   @Override
-  public List<String> responseHeader(HttpRequest request, HttpResponse httpResponse, String name) {
+  public List<String> getResponseHeader(
+      HttpRequest request, HttpResponse httpResponse, String name) {
     return AkkaHttpUtil.responseHeader(httpResponse, name);
   }
 
   @Override
   @Nullable
-  public String responseHeaders(HttpRequest unused, HttpResponse httpResponse) {
+  public String getResponseHeaders(HttpRequest unused, HttpResponse httpResponse) {
     return toJsonString(
         StreamSupport.stream(httpResponse.getHeaders().spliterator(), false)
             .collect(
@@ -64,12 +65,12 @@ class AkkaHttpServerAttributesGetter
   }
 
   @Override
-  public String flavor(HttpRequest request) {
+  public String getFlavor(HttpRequest request) {
     return AkkaHttpUtil.flavor(request);
   }
 
   @Override
-  public String target(HttpRequest request) {
+  public String getTarget(HttpRequest request) {
     String target = request.uri().path().toString();
     Option<String> queryString = request.uri().rawQueryString();
     if (queryString.isDefined()) {
@@ -80,12 +81,12 @@ class AkkaHttpServerAttributesGetter
 
   @Override
   @Nullable
-  public String route(HttpRequest request) {
+  public String getRoute(HttpRequest request) {
     return null;
   }
 
   @Override
-  public String scheme(HttpRequest request) {
+  public String getScheme(HttpRequest request) {
     return request.uri().scheme();
   }
 
