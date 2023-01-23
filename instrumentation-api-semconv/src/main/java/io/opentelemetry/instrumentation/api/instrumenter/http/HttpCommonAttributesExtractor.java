@@ -49,7 +49,7 @@ abstract class HttpCommonAttributesExtractor<
     internalSet(attributes, SemanticAttributes.HTTP_METHOD, getter.getMethod(request));
     internalSet(attributes, SemanticAttributes.HTTP_USER_AGENT, userAgent(request));
 
-    String reqHeaders = requestHeaders(request, null);
+    String reqHeaders = requestHeaders(request);
     if (reqHeaders != null) {
       internalSet(attributes, HTTP_REQUEST_HEADERS, reqHeaders);
     }
@@ -99,13 +99,13 @@ abstract class HttpCommonAttributesExtractor<
   }
 
   @Nullable
-  private String requestHeaders(REQUEST request, @Nullable RESPONSE response) {
-    return getter.requestHeaders(request, response);
+  private String requestHeaders(REQUEST request) {
+    return getter.getRequestHeaders(request);
   }
 
   @Nullable
-  private String responseHeaders(REQUEST request, @Nullable RESPONSE response) {
-    return getter.responseHeaders(request, response);
+  private String responseHeaders(REQUEST request, RESPONSE response) {
+    return getter.getResponseHeaders(request, response);
   }
 
   @Nullable
