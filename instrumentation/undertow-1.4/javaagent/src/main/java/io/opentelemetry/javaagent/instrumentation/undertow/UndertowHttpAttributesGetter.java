@@ -37,25 +37,25 @@ public class UndertowHttpAttributesGetter
 
   @Override
   @Nullable
-  public String requestHeaders(HttpServerExchange exchange, HttpServerExchange unused) {
+  public String getRequestHeaders(HttpServerExchange exchange) {
     return toJsonString(
         exchange.getRequestHeaders().getHeaderNames().stream()
             .map(HttpString::toString)
             .collect(
                 Collectors.toMap(
-                    Function.identity(), (h) -> firstListValue(requestHeader(exchange, h)))));
+                    Function.identity(), (h) -> firstListValue(getRequestHeader(exchange, h)))));
   }
 
   @Override
   @Nullable
-  public String responseHeaders(HttpServerExchange unused, HttpServerExchange exchange) {
+  public String getResponseHeaders(HttpServerExchange unused, HttpServerExchange exchange) {
     return toJsonString(
         exchange.getResponseHeaders().getHeaderNames().stream()
             .map(HttpString::toString)
             .collect(
                 Collectors.toMap(
                     Function.identity(),
-                    (h) -> firstListValue(responseHeader(exchange, exchange, h)))));
+                    (h) -> firstListValue(getResponseHeader(exchange, exchange, h)))));
   }
 
   @Override
