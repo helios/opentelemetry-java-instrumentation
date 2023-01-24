@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.instrumentation.test.AgentInstrumentationSpecification
 import io.opentelemetry.api.logs.Severity
 import io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions
@@ -21,6 +22,7 @@ import static org.awaitility.Awaitility.await
 class Log4j2Test extends AgentInstrumentationSpecification {
 
   private static final Logger logger = LogManager.getLogger("abc")
+  private static Boolean isFirstLog = true
 
   @Unroll
   def "test method=#testMethod with exception=#exception and parent=#parent"() {
@@ -42,8 +44,16 @@ class Log4j2Test extends AgentInstrumentationSpecification {
     }
 
     then:
+    def heliosInstrumentedIndication = "heliosLogInstrumented"
+    int heliosAttrsLength = 0
+
     if (parent) {
       waitForTraces(1)
+
+      if (severity != null && isFirstLog) {
+        heliosAttrsLength++
+        isFirstLog = false
+      }
     }
 
     if (severity != null) {
@@ -58,12 +68,12 @@ class Log4j2Test extends AgentInstrumentationSpecification {
       assertThat(log.getSeverity()).isEqualTo(severity)
       assertThat(log.getSeverityText()).isEqualTo(severityText)
       if (exception) {
-        assertThat(log.getAttributes().size()).isEqualTo(5)
+        assertThat(log.getAttributes().size()).isEqualTo(5 + heliosAttrsLength)
         OpenTelemetryAssertions.assertThat(log.getAttributes()).containsEntry(SemanticAttributes.EXCEPTION_TYPE, IllegalStateException.getName())
         OpenTelemetryAssertions.assertThat(log.getAttributes()).containsEntry(SemanticAttributes.EXCEPTION_MESSAGE, "hello")
         OpenTelemetryAssertions.assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_STACKTRACE)).contains(Log4j2Test.name)
       } else {
-        assertThat(log.getAttributes().size()).isEqualTo(2)
+        assertThat(log.getAttributes().size()).isEqualTo(2 + heliosAttrsLength)
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_TYPE)).isNull()
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_MESSAGE)).isNull()
         assertThat(log.getAttributes().get(SemanticAttributes.EXCEPTION_STACKTRACE)).isNull()
@@ -72,6 +82,9 @@ class Log4j2Test extends AgentInstrumentationSpecification {
       OpenTelemetryAssertions.assertThat(log.getAttributes()).containsEntry(SemanticAttributes.THREAD_ID, Thread.currentThread().getId())
       if (parent) {
         assertThat(log.getSpanContext()).isEqualTo(traces.get(0).get(0).getSpanContext())
+        if (heliosAttrsLength == 1) {
+          assertThat(log.getAttributes().get(AttributeKey.stringKey(heliosInstrumentedIndication))).isEqualTo("log4j2")
+        }
       } else {
         assertThat(log.getSpanContext().isValid()).isFalse()
       }

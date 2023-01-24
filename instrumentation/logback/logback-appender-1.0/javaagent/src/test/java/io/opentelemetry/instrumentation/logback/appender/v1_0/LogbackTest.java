@@ -36,6 +36,7 @@ class LogbackTest extends AgentInstrumentationSpecification {
 
   private static final Logger abcLogger = LoggerFactory.getLogger("abc");
   private static final Logger defLogger = LoggerFactory.getLogger("def");
+  private static Boolean isFirstLog = true;
 
   private static Stream<Arguments> provideParameters() {
     return Stream.of(
@@ -129,6 +130,7 @@ class LogbackTest extends AgentInstrumentationSpecification {
     }
 
     // then
+    int numOfHeliosAttributes = 0;
     if (withParent) {
       testing.waitForTraces(1);
     }
@@ -144,6 +146,12 @@ class LogbackTest extends AgentInstrumentationSpecification {
               InstrumentationScopeInfo.builder(expectedLoggerName).setVersion("").build())
           .hasSeverity(expectedSeverity)
           .hasSeverityText(expectedSeverityText);
+
+      if (withParent && isFirstLog) {
+        numOfHeliosAttributes++;
+        isFirstLog = false;
+      }
+
       if (logException) {
         assertThat(log)
             .hasAttributesSatisfying(
@@ -158,7 +166,7 @@ class LogbackTest extends AgentInstrumentationSpecification {
                             SemanticAttributes.EXCEPTION_STACKTRACE,
                             value -> assertThat(value).contains(LogbackTest.class.getName())));
       } else {
-        assertThat(log.getAttributes()).hasSize(6);
+        assertThat(log.getAttributes()).hasSize(6 + numOfHeliosAttributes);
       }
 
       assertThat(log)

@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.logback.mdc.v1_0;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.SPAN_ID;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_FLAGS;
 import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.TRACE_ID;
@@ -17,6 +18,7 @@ import static net.bytebuddy.matcher.ElementMatchers.namedOneOf;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.util.VirtualField;
@@ -32,6 +34,7 @@ import net.bytebuddy.implementation.bytecode.assign.Assigner.Typing;
 import net.bytebuddy.matcher.ElementMatcher;
 
 public class LoggingEventInstrumentation implements TypeInstrumentation {
+
   @Override
   public ElementMatcher<ClassLoader> classLoaderOptimization() {
     return hasClassesNamed("ch.qos.logback.classic.spi.ILoggingEvent");
@@ -55,6 +58,17 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
   @SuppressWarnings("unused")
   public static class GetMdcAdvice {
 
+    public static boolean heliosInstrumentedIndicator = false;
+
+    public static void markInstrumentationIndicator(Span span, SpanContext spanContext) {
+      if (!span.isRecording() || !spanContext.isValid() || heliosInstrumentedIndicator) {
+        return;
+      }
+
+      span.setAttribute(HELIOS_INSTRUMENTED_INDICATION, "logback");
+      heliosInstrumentedIndicator = true;
+    }
+
     @Advice.OnMethodExit(suppress = Throwable.class)
     public static void onExit(
         @Advice.This ILoggingEvent event,
@@ -69,10 +83,13 @@ public class LoggingEventInstrumentation implements TypeInstrumentation {
         return;
       }
 
-      SpanContext spanContext = Java8BytecodeBridge.spanFromContext(context).getSpanContext();
+      Span span = Java8BytecodeBridge.spanFromContext(context);
+      SpanContext spanContext = span.getSpanContext();
       if (!spanContext.isValid()) {
         return;
       }
+
+      markInstrumentationIndicator(span, spanContext);
 
       Map<String, String> spanContextData = new HashMap<>();
       spanContextData.put(TRACE_ID, spanContext.getTraceId());

@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.logback.v1_0
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION
+
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.opentelemetry.api.trace.Span
@@ -89,5 +91,20 @@ abstract class AbstractLogbackTest extends InstrumentationSpecification {
     events[2].getMDCPropertyMap().get("trace_id") == span2.spanContext.traceId
     events[2].getMDCPropertyMap().get("span_id") == span2.spanContext.spanId
     events[2].getMDCPropertyMap().get("trace_flags") == "01"
+
+    assertTraces(2) {
+      trace(0, 1) {
+        span(0) {
+          attributes {
+            "$HELIOS_INSTRUMENTED_INDICATION" "logback"
+          }
+        }
+      }
+      trace(1, 1) {
+        span(0) {
+          attributes {}
+        }
+      }
+    }
   }
 }
