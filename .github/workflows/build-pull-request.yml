@@ -11,8 +11,14 @@ jobs:
   common:
     uses: ./.github/workflows/build-common.yml
     with:
-      # windows smoke tests are slower, and it's rare for only the windows smoke tests to break
+      # it's rare for only the openj9 tests or the windows smoke tests to break
+      skip-openj9-tests: ${{ !contains(github.event.pull_request.labels.*.name, 'test openj9') }}
       skip-windows-smoke-tests: ${{ !contains(github.event.pull_request.labels.*.name, 'test windows') }}
+      cache-read-only: true
+
+  test-latest-deps:
+    uses: ./.github/workflows/reusable-test-latest-deps.yml
+    with:
       cache-read-only: true
 
   muzzle:
