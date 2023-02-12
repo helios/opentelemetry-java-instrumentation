@@ -36,7 +36,8 @@ class LogbackTest {
 
   private static final Logger abcLogger = LoggerFactory.getLogger("abc");
   private static final Logger defLogger = LoggerFactory.getLogger("def");
-  private static Boolean isFirstLog = true;
+  private static final AttributeKey<String> HELIOS_INSTRUMENTED_INDICATION =
+      AttributeKey.stringKey("heliosLogInstrumented");
 
   private static Stream<Arguments> provideParameters() {
     return Stream.of(
@@ -130,9 +131,13 @@ class LogbackTest {
     }
 
     // then
-    int numOfHeliosAttributes = 0;
+    boolean expectHeliosIndication = false;
+
     if (withParent) {
       testing.waitForTraces(1);
+      if (expectedSeverity != null) {
+        expectHeliosIndication = true;
+      }
     }
 
     if (expectedSeverity != null) {
@@ -143,14 +148,10 @@ class LogbackTest {
           .hasSeverity(expectedSeverity)
           .hasSeverityText(expectedSeverityText);
 
-      if (withParent && isFirstLog) {
-        numOfHeliosAttributes++;
-        isFirstLog = false;
-      }
-
       if (logException) {
         assertThat(log)
             .hasAttributesSatisfyingExactly(
+                equalTo(HELIOS_INSTRUMENTED_INDICATION, expectHeliosIndication ? "logback" : null),
                 equalTo(SemanticAttributes.THREAD_NAME, Thread.currentThread().getName()),
                 equalTo(SemanticAttributes.THREAD_ID, Thread.currentThread().getId()),
                 equalTo(SemanticAttributes.CODE_NAMESPACE, LogbackTest.class.getName()),
@@ -163,9 +164,9 @@ class LogbackTest {
                     SemanticAttributes.EXCEPTION_STACKTRACE,
                     v -> v.contains(LogbackTest.class.getName())));
       } else {
-        assertThat(log.getAttributes()).hasSize(6 + numOfHeliosAttributes);
         assertThat(log)
             .hasAttributesSatisfyingExactly(
+                equalTo(HELIOS_INSTRUMENTED_INDICATION, expectHeliosIndication ? "logback" : null),
                 equalTo(SemanticAttributes.THREAD_NAME, Thread.currentThread().getName()),
                 equalTo(SemanticAttributes.THREAD_ID, Thread.currentThread().getId()),
                 equalTo(SemanticAttributes.CODE_NAMESPACE, LogbackTest.class.getName()),

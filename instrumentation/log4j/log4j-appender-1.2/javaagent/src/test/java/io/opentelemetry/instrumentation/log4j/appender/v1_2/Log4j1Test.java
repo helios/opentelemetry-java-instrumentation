@@ -47,7 +47,6 @@ class Log4j1Test {
   static final InstrumentationExtension testing = AgentInstrumentationExtension.create();
 
   private static final Logger logger = Logger.getLogger("abc");
-  private static boolean isFirstLog = true;
 
   private static final AttributeKey<String> HELIOS_INSTRUMENTED_INDICATION =
       AttributeKey.stringKey("heliosLogInstrumented");
@@ -96,9 +95,8 @@ class Log4j1Test {
 
     if (withParent) {
       testing.waitForTraces(1);
-      if (expectedSeverity != null && isFirstLog) {
+      if (expectedSeverity != null) {
         expectHeliosIndication = true;
-        isFirstLog = false;
       }
     }
 
