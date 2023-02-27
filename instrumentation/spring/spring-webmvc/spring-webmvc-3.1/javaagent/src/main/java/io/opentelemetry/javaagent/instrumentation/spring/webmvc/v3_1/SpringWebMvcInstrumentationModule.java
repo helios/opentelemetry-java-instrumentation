@@ -21,7 +21,10 @@ public class SpringWebMvcInstrumentationModule extends InstrumentationModule {
   @Override
   public boolean isHelperClass(String className) {
     return className.startsWith(
-        "org.springframework.web.servlet.v3_1.OpenTelemetryHandlerMappingFilter");
+            "org.springframework.web.servlet.v3_1.OpenTelemetryHandlerMappingFilter")
+        || className.startsWith("org.springframework.web.servlet.v3_1.ContentCachingRequestWrapper")
+        || className.startsWith(
+            "org.springframework.web.servlet.v3_1.ContentCachingResponseWrapper");
   }
 
   @Override
