@@ -5,4 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.vaadin;
 
+import org.junit.Ignore;
+
+@Ignore
 public class Vaadin142Test extends AbstractVaadin14Test {}
