@@ -187,6 +187,7 @@ jobs:
             -x spotlessCheck
             -x :instrumentation:vaadin-14.2:javaagent:vaadin142Test
             -x :instrumentation:vaadin-14.2:javaagent:vaadin16Test
+            -x :instrumentation:aws-sdk:aws-sdk-1.11:javaagent:test
             -PtestJavaVersion=${{ matrix.test-java-version }}
             -PtestJavaVM=${{ matrix.vm }}
             -Porg.gradle.java.installations.paths=${{ steps.setup-test-java.outputs.path }}
