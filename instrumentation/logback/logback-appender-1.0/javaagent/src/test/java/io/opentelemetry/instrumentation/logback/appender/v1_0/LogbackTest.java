@@ -36,6 +36,9 @@ class LogbackTest {
 
   private static final Logger abcLogger = LoggerFactory.getLogger("abc");
   private static final Logger defLogger = LoggerFactory.getLogger("def");
+  private static boolean isFirstLog = true;
+  private static final AttributeKey<String> HELIOS_INSTRUMENTED_INDICATION =
+      AttributeKey.stringKey("heliosLogInstrumented");
 
   private static Stream<Arguments> provideParameters() {
     return Stream.of(
@@ -129,8 +132,14 @@ class LogbackTest {
     }
 
     // then
+    boolean expectHeliosIndication = false;
+
     if (withParent) {
       testing.waitForTraces(1);
+      if (expectedSeverity != null && isFirstLog) {
+        expectHeliosIndication = true;
+        isFirstLog = false;
+      }
     }
 
     if (expectedSeverity != null) {
@@ -140,9 +149,11 @@ class LogbackTest {
           .hasInstrumentationScope(InstrumentationScopeInfo.builder(expectedLoggerName).build())
           .hasSeverity(expectedSeverity)
           .hasSeverityText(expectedSeverityText);
+
       if (logException) {
         assertThat(log)
             .hasAttributesSatisfyingExactly(
+                equalTo(HELIOS_INSTRUMENTED_INDICATION, expectHeliosIndication ? "logback" : null),
                 equalTo(SemanticAttributes.THREAD_NAME, Thread.currentThread().getName()),
                 equalTo(SemanticAttributes.THREAD_ID, Thread.currentThread().getId()),
                 equalTo(SemanticAttributes.CODE_NAMESPACE, LogbackTest.class.getName()),
@@ -157,6 +168,7 @@ class LogbackTest {
       } else {
         assertThat(log)
             .hasAttributesSatisfyingExactly(
+                equalTo(HELIOS_INSTRUMENTED_INDICATION, expectHeliosIndication ? "logback" : null),
                 equalTo(SemanticAttributes.THREAD_NAME, Thread.currentThread().getName()),
                 equalTo(SemanticAttributes.THREAD_ID, Thread.currentThread().getId()),
                 equalTo(SemanticAttributes.CODE_NAMESPACE, LogbackTest.class.getName()),
@@ -167,6 +179,9 @@ class LogbackTest {
 
       if (withParent) {
         assertThat(log).hasSpanContext(testing.spans().get(0).getSpanContext());
+        if (expectHeliosIndication) {
+          assertThat(log.getAttributes().get(HELIOS_INSTRUMENTED_INDICATION)).isEqualTo("logback");
+        }
       } else {
         assertThat(log.getSpanContext().isValid()).isFalse();
       }

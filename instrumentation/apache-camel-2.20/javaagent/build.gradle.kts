@@ -16,6 +16,7 @@ val camelversion = "2.20.1" // first version that the tests pass on
 dependencies {
   library("org.apache.camel:camel-core:$camelversion")
   implementation("io.opentelemetry.contrib:opentelemetry-aws-xray-propagator")
+  implementation("io.opentelemetry:opentelemetry-extension-aws")
 
   // without adding this dependency, javadoc fails:
   //   warning: unknown enum constant XmlAccessType.PROPERTY

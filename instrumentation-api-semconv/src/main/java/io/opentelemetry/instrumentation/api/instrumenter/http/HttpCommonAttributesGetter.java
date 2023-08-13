@@ -43,6 +43,11 @@ public interface HttpCommonAttributesGetter<REQUEST, RESPONSE> {
     return requestHeader(request, name);
   }
 
+  @Nullable
+  default String getRequestHeaders(REQUEST request) {
+    return null;
+  }
+
   /**
    * Extracts all values of header named {@code name} from the request, or an empty list if there
    * were none.
@@ -102,6 +107,11 @@ public interface HttpCommonAttributesGetter<REQUEST, RESPONSE> {
    */
   default List<String> getResponseHeader(REQUEST request, RESPONSE response, String name) {
     return responseHeader(request, response, name);
+  }
+
+  @Nullable
+  default String getResponseHeaders(REQUEST request, RESPONSE response) {
+    return null;
   }
 
   /**

@@ -63,6 +63,7 @@ class NoReceiveTelemetrySingleRecordVertxKafkaTest extends AbstractVertxKafkaTes
                             equalTo(SemanticAttributes.MESSAGING_SYSTEM, "kafka"),
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan"),
                             satisfies(
                                 SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                 AbstractLongAssert::isNotNegative),
@@ -78,6 +79,7 @@ class NoReceiveTelemetrySingleRecordVertxKafkaTest extends AbstractVertxKafkaTes
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
                             equalTo(SemanticAttributes.MESSAGING_OPERATION, "process"),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan"),
                             satisfies(
                                 SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES,
                                 AbstractLongAssert::isNotNegative),
@@ -115,6 +117,7 @@ class NoReceiveTelemetrySingleRecordVertxKafkaTest extends AbstractVertxKafkaTes
                             equalTo(SemanticAttributes.MESSAGING_SYSTEM, "kafka"),
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
                             satisfies(
                                 SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                 AbstractLongAssert::isNotNegative),
@@ -132,6 +135,7 @@ class NoReceiveTelemetrySingleRecordVertxKafkaTest extends AbstractVertxKafkaTes
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                             equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
                             equalTo(SemanticAttributes.MESSAGING_OPERATION, "process"),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
                             satisfies(
                                 SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES,
                                 AbstractLongAssert::isNotNegative),

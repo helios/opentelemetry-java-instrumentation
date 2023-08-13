@@ -49,6 +49,7 @@ public abstract class AbstractSpringKafkaNoReceiveTelemetryTest extends Abstract
                                 equalTo(
                                     SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                                 equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
+                                equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan"),
                                 satisfies(
                                     SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                     AbstractLongAssert::isNotNegative),
@@ -65,6 +66,7 @@ public abstract class AbstractSpringKafkaNoReceiveTelemetryTest extends Abstract
                                     SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                                 equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
                                 equalTo(SemanticAttributes.MESSAGING_OPERATION, "process"),
+                                equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan"),
                                 satisfies(
                                     SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES,
                                     AbstractLongAssert::isNotNegative),
@@ -104,6 +106,7 @@ public abstract class AbstractSpringKafkaNoReceiveTelemetryTest extends Abstract
                                 equalTo(
                                     SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                                 equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
+                                equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
                                 satisfies(
                                     SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                     AbstractLongAssert::isNotNegative),
@@ -122,6 +125,7 @@ public abstract class AbstractSpringKafkaNoReceiveTelemetryTest extends Abstract
                                     SemanticAttributes.MESSAGING_DESTINATION, "testSingleTopic"),
                                 equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
                                 equalTo(SemanticAttributes.MESSAGING_OPERATION, "process"),
+                                equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
                                 satisfies(
                                     SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES,
                                     AbstractLongAssert::isNotNegative),
@@ -158,6 +162,7 @@ public abstract class AbstractSpringKafkaNoReceiveTelemetryTest extends Abstract
                               equalTo(SemanticAttributes.MESSAGING_SYSTEM, "kafka"),
                               equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testBatchTopic"),
                               equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
+                              equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan2"),
                               satisfies(
                                   SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                   AbstractLongAssert::isNotNegative),
@@ -172,6 +177,7 @@ public abstract class AbstractSpringKafkaNoReceiveTelemetryTest extends Abstract
                               equalTo(SemanticAttributes.MESSAGING_SYSTEM, "kafka"),
                               equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testBatchTopic"),
                               equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
+                              equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan1"),
                               satisfies(
                                   SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                   AbstractLongAssert::isNotNegative),
@@ -229,6 +235,7 @@ public abstract class AbstractSpringKafkaNoReceiveTelemetryTest extends Abstract
                               equalTo(SemanticAttributes.MESSAGING_SYSTEM, "kafka"),
                               equalTo(SemanticAttributes.MESSAGING_DESTINATION, "testBatchTopic"),
                               equalTo(SemanticAttributes.MESSAGING_DESTINATION_KIND, "topic"),
+                              equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
                               satisfies(
                                   SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                   AbstractLongAssert::isNotNegative),

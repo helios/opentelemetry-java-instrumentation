@@ -5,11 +5,15 @@
 
 package io.opentelemetry.javaagent.instrumentation.tomcat.common;
 
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.javaagent.bootstrap.servlet.AppServerBridge;
 import io.opentelemetry.javaagent.instrumentation.servlet.ServletHelper;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.coyote.Request;
 import org.apache.coyote.Response;
 import org.apache.tomcat.util.buf.MessageBytes;
@@ -77,5 +81,42 @@ public class TomcatHelper<REQUEST, RESPONSE> {
       return messageBytes.getByteChunk().toString();
     }
     return messageBytes.toString();
+  }
+
+  public void attachRequestHeadersToSpan(Request request, Span span) {
+    Map<String, String> requestHeaders = extractRequestHeaders(request);
+    span.setAttribute("http.request.headers", String.valueOf(requestHeaders));
+  }
+
+  public void attachResponseHeadersToSpan(Response response, Span span) {
+    Map<String, String> responseHeaders = extractResponseHeaders(response);
+    span.setAttribute("http.response.headers", String.valueOf(responseHeaders));
+  }
+
+  private static Map<String, String> extractRequestHeaders(Request request) {
+    Enumeration<String> requestHeaderNames = request.getMimeHeaders().names();
+    Map<String, String> requestHeaders = new HashMap<>();
+
+    if (requestHeaderNames != null) {
+      while (requestHeaderNames.hasMoreElements()) {
+        String headerName = requestHeaderNames.nextElement();
+        requestHeaders.put(headerName, request.getHeader(headerName));
+      }
+    }
+
+    return requestHeaders;
+  }
+
+  private static Map<String, String> extractResponseHeaders(Response response) {
+    Map<String, String> responseHeaders = new HashMap<>();
+    Enumeration<String> responseHeaderNames = response.getMimeHeaders().names();
+    if (responseHeaderNames != null) {
+      while (responseHeaderNames.hasMoreElements()) {
+        String headerName = responseHeaderNames.nextElement();
+        responseHeaders.put(headerName, response.getMimeHeaders().getHeader(headerName));
+      }
+    }
+
+    return responseHeaders;
   }
 }

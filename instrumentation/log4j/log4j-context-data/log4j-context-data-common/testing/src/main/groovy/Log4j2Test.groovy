@@ -34,6 +34,8 @@ abstract class Log4j2Test extends InstrumentationSpecification {
     events[1].contextData["trace_id"] == null
     events[1].contextData["span_id"] == null
     events[1].contextData["trace_flags"] == null
+
+    assertTraces(0) {}
   }
 
   def "ids when span"() {
@@ -71,5 +73,20 @@ abstract class Log4j2Test extends InstrumentationSpecification {
     events[2].contextData["trace_id"] == span2.spanContext.traceId
     events[2].contextData["span_id"] == span2.spanContext.spanId
     events[2].contextData["trace_flags"] == "01"
+
+    assertTraces(2) {
+      trace(0, 1) {
+        span(0) {
+          attributes {
+            "heliosLogInstrumented" "log4j2"
+          }
+        }
+      }
+      trace(1, 1) {
+        span(0) {
+          attributes {}
+        }
+      }
+    }
   }
 }

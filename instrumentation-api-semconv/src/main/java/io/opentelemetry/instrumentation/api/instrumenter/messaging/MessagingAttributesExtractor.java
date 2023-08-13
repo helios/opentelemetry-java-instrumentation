@@ -11,6 +11,7 @@ import static io.opentelemetry.instrumentation.api.instrumenter.messaging.Messag
 import static io.opentelemetry.instrumentation.api.instrumenter.messaging.MessageOperation.RECEIVE;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
@@ -32,6 +33,10 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
     implements AttributesExtractor<REQUEST, RESPONSE>, SpanKeyProvider {
 
   static final String TEMP_DESTINATION_NAME = "(temporary)";
+  static final long HS_MAX_PAYLOAD_SIZE = 65536;
+
+  public static final AttributeKey<String> MESSAGING_PAYLOAD =
+      AttributeKey.stringKey("messaging.payload");
 
   /**
    * Creates the messaging attributes extractor for the given {@link MessageOperation operation}
@@ -100,6 +105,11 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
         getter.getMessagePayloadCompressedSize(request));
     if (operation == RECEIVE || operation == PROCESS) {
       internalSet(attributes, SemanticAttributes.MESSAGING_OPERATION, operation.operationName());
+    }
+
+    String messagePayload = getter.getMessagePayload(request);
+    if (messagePayload != null && messagePayload.length() <= HS_MAX_PAYLOAD_SIZE) {
+      internalSet(attributes, MESSAGING_PAYLOAD, messagePayload);
     }
   }
 

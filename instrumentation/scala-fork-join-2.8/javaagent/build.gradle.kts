@@ -21,3 +21,7 @@ dependencies {
 
   testImplementation(project(":instrumentation:executors:testing"))
 }
+
+tasks.withType<Test>().configureEach {
+  jvmArgs("-Dotel.instrumentation.common.db-statement-sanitizer.enabled=true")
+}

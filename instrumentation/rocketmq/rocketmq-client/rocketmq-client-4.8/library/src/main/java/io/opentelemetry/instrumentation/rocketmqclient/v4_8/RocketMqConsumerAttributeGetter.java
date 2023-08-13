@@ -7,6 +7,7 @@ package io.opentelemetry.instrumentation.rocketmqclient.v4_8;
 
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -85,5 +86,11 @@ enum RocketMqConsumerAttributeGetter implements MessagingAttributesGetter<Messag
       return Collections.singletonList(value);
     }
     return Collections.emptyList();
+  }
+
+  @Nullable
+  @Override
+  public String getMessagePayload(MessageExt messageExt) {
+    return new String(messageExt.getBody(), StandardCharsets.UTF_8);
   }
 }

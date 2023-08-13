@@ -8,6 +8,8 @@ package io.opentelemetry.instrumentation.api.instrumenter.http;
 import static io.opentelemetry.instrumentation.api.instrumenter.http.CapturedHttpHeadersUtil.lowercase;
 import static io.opentelemetry.instrumentation.api.instrumenter.http.CapturedHttpHeadersUtil.requestAttributeKey;
 import static io.opentelemetry.instrumentation.api.instrumenter.http.CapturedHttpHeadersUtil.responseAttributeKey;
+import static io.opentelemetry.instrumentation.api.instrumenter.http.SemanticAttributes.HTTP_REQUEST_HEADERS;
+import static io.opentelemetry.instrumentation.api.instrumenter.http.SemanticAttributes.HTTP_RESPONSE_HEADERS;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 import static java.util.logging.Level.FINE;
 
@@ -47,6 +49,11 @@ abstract class HttpCommonAttributesExtractor<
     internalSet(attributes, SemanticAttributes.HTTP_METHOD, getter.getMethod(request));
     internalSet(attributes, SemanticAttributes.HTTP_USER_AGENT, userAgent(request));
 
+    String reqHeaders = requestHeaders(request);
+    if (reqHeaders != null) {
+      internalSet(attributes, HTTP_REQUEST_HEADERS, reqHeaders);
+    }
+
     for (String name : capturedRequestHeaders) {
       List<String> values = getter.getRequestHeader(request, name);
       if (!values.isEmpty()) {
@@ -77,6 +84,11 @@ abstract class HttpCommonAttributesExtractor<
           SemanticAttributes.HTTP_RESPONSE_CONTENT_LENGTH,
           responseContentLength(request, response));
 
+      String resHeaders = responseHeaders(request, response);
+      if (resHeaders != null) {
+        internalSet(attributes, HTTP_RESPONSE_HEADERS, resHeaders);
+      }
+
       for (String name : capturedResponseHeaders) {
         List<String> values = getter.getResponseHeader(request, response, name);
         if (!values.isEmpty()) {
@@ -84,6 +96,16 @@ abstract class HttpCommonAttributesExtractor<
         }
       }
     }
+  }
+
+  @Nullable
+  private String requestHeaders(REQUEST request) {
+    return getter.getRequestHeaders(request);
+  }
+
+  @Nullable
+  private String responseHeaders(REQUEST request, RESPONSE response) {
+    return getter.getResponseHeaders(request, response);
   }
 
   @Nullable

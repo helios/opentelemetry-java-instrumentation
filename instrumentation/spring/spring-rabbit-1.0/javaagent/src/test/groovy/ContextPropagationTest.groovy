@@ -75,7 +75,7 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
     runWithSpan("parent") {
       if (testHeaders) {
         applicationContext.getBean(AmqpTemplate)
-          .convertAndSend(ConsumerConfig.TEST_QUEUE, (Object) "test", new MessagePostProcessor() {
+          .convertAndSend(ConsumerConfig.TEST_QUEUE, (Object) "test payload", new MessagePostProcessor() {
             @Override
             Message postProcessMessage(Message message) throws AmqpException {
               message.getMessageProperties().setHeader("test-message-header", "test")
@@ -84,7 +84,7 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
           })
       } else {
         applicationContext.getBean(AmqpTemplate)
-          .convertAndSend(ConsumerConfig.TEST_QUEUE, "test")
+          .convertAndSend(ConsumerConfig.TEST_QUEUE, "test payload")
       }
     }
 
@@ -110,6 +110,7 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" "test payload"
           }
         }
         // spring-cloud-stream-binder-rabbit listener puts all messages into a BlockingQueue immediately after receiving
@@ -129,6 +130,7 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" "test payload"
           }
         }
         span(3) {
@@ -145,6 +147,7 @@ class ContextPropagationTest extends AgentInstrumentationSpecification {
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" "test payload"
           }
         }
         span(4) {

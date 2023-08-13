@@ -67,6 +67,7 @@ class SpringIntegrationAndRabbitTest extends AgentInstrumentationSpecification i
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "queue"
             "$SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES" Long
             "$SemanticAttributes.MESSAGING_RABBITMQ_ROUTING_KEY" String
+            "messaging.payload" String
           }
         }
         // spring-cloud-stream-binder-rabbit listener puts all messages into a BlockingQueue immediately after receiving
@@ -83,6 +84,7 @@ class SpringIntegrationAndRabbitTest extends AgentInstrumentationSpecification i
             "$SemanticAttributes.MESSAGING_OPERATION" "process"
             "$SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES" Long
             "$SemanticAttributes.MESSAGING_RABBITMQ_ROUTING_KEY" String
+            "messaging.payload" String
           }
         }
         // spring-integration will detect that spring-rabbit has already created a consumer span and back off
@@ -98,6 +100,7 @@ class SpringIntegrationAndRabbitTest extends AgentInstrumentationSpecification i
             "$SemanticAttributes.MESSAGING_OPERATION" "process"
             "$SemanticAttributes.MESSAGING_MESSAGE_ID" String
             "$SemanticAttributes.MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES" Long
+            "messaging.payload" String
           }
         }
         span(6) {

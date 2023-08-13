@@ -6,6 +6,7 @@
 package io.opentelemetry.javaagent.instrumentation.spring.rabbit.v1_0;
 
 import io.opentelemetry.instrumentation.api.instrumenter.messaging.MessagingAttributesGetter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -83,5 +84,20 @@ enum SpringRabbitMessageAttributesGetter implements MessagingAttributesGetter<Me
       return Collections.singletonList(value.toString());
     }
     return Collections.emptyList();
+  }
+
+  @Nullable
+  @Override
+  public String getMessagePayload(Message message) {
+    if (message == null) {
+      return null;
+    }
+
+    byte[] body = message.getBody();
+    if (body == null) {
+      return null;
+    }
+
+    return new String(body, StandardCharsets.UTF_8);
   }
 }

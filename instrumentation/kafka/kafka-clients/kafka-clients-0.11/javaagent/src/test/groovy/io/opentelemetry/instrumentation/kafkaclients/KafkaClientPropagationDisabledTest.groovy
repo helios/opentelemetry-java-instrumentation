@@ -33,6 +33,7 @@ class KafkaClientPropagationDisabledTest extends KafkaClientPropagationBaseTest 
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "topic"
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" { it >= 0 }
             "messaging.kafka.message.offset" { it >= 0 }
+            "messaging.payload" message
           }
         }
       }
@@ -61,6 +62,7 @@ class KafkaClientPropagationDisabledTest extends KafkaClientPropagationBaseTest 
             "$SemanticAttributes.MESSAGING_DESTINATION_KIND" "topic"
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" { it >= 0 }
             "messaging.kafka.message.offset" { it >= 0 }
+            "messaging.payload" message
           }
         }
       }
@@ -78,6 +80,7 @@ class KafkaClientPropagationDisabledTest extends KafkaClientPropagationBaseTest 
             "$SemanticAttributes.MESSAGING_KAFKA_PARTITION" { it >= 0 }
             "messaging.kafka.message.offset" { it >= 0 }
             "kafka.record.queue_time_ms" { it >= 0 }
+            "messaging.payload" message
           }
           span(1) {
             name "processing"

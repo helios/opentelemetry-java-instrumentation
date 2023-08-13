@@ -36,6 +36,10 @@ class Log4j2Test {
   static final InstrumentationExtension testing = AgentInstrumentationExtension.create();
 
   private static final Logger logger = LogManager.getLogger("abc");
+  private static boolean isFirstLog = true;
+
+  private static final AttributeKey<String> HELIOS_INSTRUMENTED_INDICATION =
+      AttributeKey.stringKey("heliosLogInstrumented");
 
   private static Stream<Arguments> provideParameters() {
     return Stream.of(
@@ -77,8 +81,14 @@ class Log4j2Test {
     }
 
     // then
+    boolean expectHeliosIndication = false;
+
     if (withParent) {
       testing.waitForTraces(1);
+      if (expectedSeverity != null && isFirstLog) {
+        expectHeliosIndication = true;
+        isFirstLog = false;
+      }
     }
 
     if (expectedSeverity != null) {
@@ -91,6 +101,7 @@ class Log4j2Test {
       if (logException) {
         assertThat(log)
             .hasAttributesSatisfyingExactly(
+                equalTo(HELIOS_INSTRUMENTED_INDICATION, expectHeliosIndication ? "log4j2" : null),
                 equalTo(SemanticAttributes.THREAD_NAME, Thread.currentThread().getName()),
                 equalTo(SemanticAttributes.THREAD_ID, Thread.currentThread().getId()),
                 equalTo(SemanticAttributes.EXCEPTION_TYPE, IllegalStateException.class.getName()),
@@ -101,12 +112,16 @@ class Log4j2Test {
       } else {
         assertThat(log)
             .hasAttributesSatisfyingExactly(
+                equalTo(HELIOS_INSTRUMENTED_INDICATION, expectHeliosIndication ? "log4j2" : null),
                 equalTo(SemanticAttributes.THREAD_NAME, Thread.currentThread().getName()),
                 equalTo(SemanticAttributes.THREAD_ID, Thread.currentThread().getId()));
       }
 
       if (withParent) {
         assertThat(log).hasSpanContext(testing.spans().get(0).getSpanContext());
+        if (expectHeliosIndication) {
+          assertThat(log.getAttributes().get(HELIOS_INSTRUMENTED_INDICATION)).isEqualTo("log4j2");
+        }
       } else {
         assertThat(log.getSpanContext().isValid()).isFalse();
       }

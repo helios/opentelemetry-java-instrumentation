@@ -5,6 +5,7 @@
 
 package boot
 
+import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.trace.StatusCode
 import io.opentelemetry.instrumentation.test.AgentTestTrait
 import io.opentelemetry.instrumentation.test.asserts.TraceAssert
@@ -120,6 +121,35 @@ abstract class AbstractSpringBootBasedTest extends HttpServerTest<ConfigurableAp
     }
   }
 
+  def "test payload extraction"() {
+    setup:
+    def authProvider = server.getBean(SavingAuthenticationProvider)
+    def body = "abcd=1234"
+    def request = AggregatedHttpRequest.of(
+      request(PATH_PARAM, "POST").headers().toBuilder().contentType(MediaType.FORM_DATA).build(),
+      HttpData.ofUtf8(body))
+
+    when:
+    authProvider.latestAuthentications.clear()
+    def response = client.execute(request).aggregate().join()
+
+    then:
+    response.status().code() == 200
+    def respBody = response.contentUtf8()
+    assert respBody == PATH_PARAM.body
+
+    and:
+    def httpSpan = testRunner().getExportedSpans()[2]
+    def requestBody = (String) httpSpan.attributes.asMap().find {
+      e -> e.key.key == "http.request.body"
+    }.value
+    assert requestBody.equals(body)
+    def responseBody = (String) httpSpan.attributes.asMap().find {
+      e -> e.key.key == "http.response.body"
+    }.value
+    assert responseBody.equals(respBody)
+  }
+
   def "test character encoding of #testPassword"() {
     setup:
     def authProvider = server.getBean(SavingAuthenticationProvider)
@@ -139,6 +169,15 @@ abstract class AbstractSpringBootBasedTest extends HttpServerTest<ConfigurableAp
 
     and:
     assertTraces(1) {
+      def httpSpan = testRunner().getExportedSpans()[1]
+      assert httpSpan.resource.getAttribute(AttributeKey.stringKey("telemetry.sdk.name")).equalsIgnoreCase("helios-opentelemetry-javaagent")
+      def requestBody = (String) httpSpan.attributes.asMap().find {
+        e -> e.key.key == "http.request.body"
+      }.value
+      assert requestBody.startsWith("username=test&password=")
+      def responseBodyKey = (Boolean) httpSpan.attributes.asMap().containsKey("http.response.body")
+      assert !responseBodyKey
+
       trace(0, 2) {
         serverSpan(it, 0, null, null, "POST", response.contentUtf8().length(), LOGIN)
         redirectSpan(it, 1, span(0))

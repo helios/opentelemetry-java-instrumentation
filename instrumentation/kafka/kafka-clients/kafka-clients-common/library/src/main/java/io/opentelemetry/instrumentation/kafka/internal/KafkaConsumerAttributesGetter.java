@@ -89,4 +89,10 @@ public enum KafkaConsumerAttributesGetter
         .map(header -> new String(header.value(), StandardCharsets.UTF_8))
         .collect(Collectors.toList());
   }
+
+  @Nullable
+  @Override
+  public String getMessagePayload(ConsumerRecord<?, ?> consumerRecord) {
+    return String.valueOf(consumerRecord.value());
+  }
 }

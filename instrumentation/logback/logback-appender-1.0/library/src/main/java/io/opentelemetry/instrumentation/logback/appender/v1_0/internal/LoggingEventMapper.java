@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.logback.appender.v1_0.internal;
 
+import static io.opentelemetry.instrumentation.api.log.LoggingContextConstants.HELIOS_INSTRUMENTED_INDICATION;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
@@ -14,6 +16,8 @@ import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.logs.LogRecordBuilder;
 import io.opentelemetry.api.logs.LoggerProvider;
 import io.opentelemetry.api.logs.Severity;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.internal.cache.Cache;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
@@ -29,6 +33,21 @@ import org.slf4j.Marker;
  * any time.
  */
 public final class LoggingEventMapper {
+
+  private static boolean heliosInstrumentedIndicator = false;
+
+  private static void markInstrumentationIndicator(AttributesBuilder attributes) {
+    Context parentContext = Context.current();
+    Span span = Span.fromContext(parentContext);
+    SpanContext parentSpanContext = span.getSpanContext();
+
+    if (!span.isRecording() || !parentSpanContext.isValid() || heliosInstrumentedIndicator) {
+      return;
+    }
+
+    attributes.put(HELIOS_INSTRUMENTED_INDICATION, "logback");
+    heliosInstrumentedIndicator = true;
+  }
 
   private static final Cache<String, AttributeKey<String>> mdcAttributeKeys = Cache.bounded(100);
 
@@ -93,6 +112,8 @@ public final class LoggingEventMapper {
     }
 
     AttributesBuilder attributes = Attributes.builder();
+
+    markInstrumentationIndicator(attributes);
 
     // throwable
     Object throwableProxy = loggingEvent.getThrowableProxy();

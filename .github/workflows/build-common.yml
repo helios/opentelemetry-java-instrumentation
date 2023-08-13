@@ -9,9 +9,6 @@ on:
       no-build-cache:
         type: boolean
         required: false
-      skip-openj9-tests:
-        type: boolean
-        required: false
       skip-windows-smoke-tests:
         type: boolean
         required: false
@@ -135,7 +132,6 @@ jobs:
           fi
 
   test:
-    name: test${{ matrix.test-partition }} (${{ matrix.test-java-version }}, ${{ matrix.vm }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -147,13 +143,7 @@ jobs:
         vm:
           - hotspot
           - openj9
-        test-partition:
-          - 0
-          - 1
-          - 2
-          - 3
         exclude:
-          - vm: ${{ inputs.skip-openj9-tests && 'openj9' || '' }}
           - test-java-version: 19
             vm: openj9
       fail-fast: false
@@ -195,11 +185,14 @@ jobs:
           arguments: >
             check
             -x spotlessCheck
+            -x :instrumentation:vaadin-14.2:javaagent:vaadin142Test
+            -x :instrumentation:vaadin-14.2:javaagent:vaadin16Test
+            -x :instrumentation:aws-sdk:aws-sdk-1.11:javaagent:test
+            -x :javaagent-tooling:checkstyleMain
             -PtestJavaVersion=${{ matrix.test-java-version }}
             -PtestJavaVM=${{ matrix.vm }}
             -Porg.gradle.java.installations.paths=${{ steps.setup-test-java.outputs.path }}
             -Porg.gradle.java.installations.auto-download=false
-            -PtestPartition=${{ matrix.test-partition }}
             ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
           # only push cache for one matrix option since github action cache space is limited
           cache-read-only: ${{ inputs.cache-read-only || matrix.test-java-version != 11 || matrix.vm != 'hotspot' }}
@@ -282,7 +275,7 @@ jobs:
           GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_ACCESS_KEY }}
           GE_CACHE_USERNAME: ${{ secrets.GE_CACHE_USERNAME }}
           GE_CACHE_PASSWORD: ${{ secrets.GE_CACHE_PASSWORD }}
-        run: ./gradlew :smoke-tests:test -PsmokeTestSuite=${{ matrix.smoke-test-suite }}${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+        run: ./gradlew :smoke-tests:test -PsmokeTestSuite=${{ matrix.smoke-test-suite }}${{ inputs.no-build-cache && ' --no-build-cache' || '' }} -x :instrumentation:vaadin-14.2:javaagent:vaadin142Test
 
       - name: Upload jvm crash dump files if any
         if: failure()

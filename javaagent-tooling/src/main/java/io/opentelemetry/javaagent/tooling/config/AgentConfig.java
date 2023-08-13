@@ -28,6 +28,11 @@ public final class AgentConfig {
   }
 
   public static boolean isDebugModeEnabled(ConfigProperties config) {
+    String heliosDebugEnv = System.getenv("HS_DEBUG");
+
+    if (heliosDebugEnv != null && Boolean.parseBoolean(heliosDebugEnv)) {
+      return true;
+    }
     return config.getBoolean("otel.javaagent.debug", false);
   }
 

@@ -10,3 +10,9 @@ dependencies {
   implementation("io.opentelemetry:opentelemetry-api")
   implementation("org.spockframework:spock-core")
 }
+
+tasks {
+  test {
+    jvmArgs("-Dotel.instrumentation.common.db-statement-sanitizer.enabled=true")
+  }
+}

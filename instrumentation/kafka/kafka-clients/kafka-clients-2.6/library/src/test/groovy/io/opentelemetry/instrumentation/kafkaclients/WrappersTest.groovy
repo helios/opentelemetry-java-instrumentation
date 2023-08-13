@@ -77,6 +77,7 @@ class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" greeting
           }
         }
         span(2) {
@@ -95,6 +96,7 @@ class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
             if (testHeaders) {
               "messaging.header.test_message_header" { it == ["test"] }
             }
+            "messaging.payload" greeting
           }
         }
         span(3) {

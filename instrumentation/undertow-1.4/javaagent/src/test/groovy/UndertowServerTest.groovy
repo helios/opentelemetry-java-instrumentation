@@ -19,6 +19,7 @@ import io.undertow.util.HttpString
 import io.undertow.util.StatusCodes
 
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.CAPTURE_HEADERS
+import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.CAPTURE_HEADERS_AS_JSON
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.ERROR
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.EXCEPTION
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.INDEXED_CHILD
@@ -28,6 +29,11 @@ import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint
 
 //TODO make test which mixes handlers and servlets
 class UndertowServerTest extends HttpServerTest<Undertow> implements AgentTestTrait {
+
+  @Override
+  boolean testCapturedHttpHeadersAsJson() {
+    return true
+  }
 
   @Override
   Undertow startServer(int port) {
@@ -56,6 +62,12 @@ class UndertowServerTest extends HttpServerTest<Undertow> implements AgentTestTr
             exchange.setStatusCode(StatusCodes.OK)
             exchange.getResponseHeaders().put(new HttpString("X-Test-Response"), exchange.getRequestHeaders().getFirst("X-Test-Request"))
             exchange.getResponseSender().send(CAPTURE_HEADERS.body)
+          }
+        }
+        .addExactPath(CAPTURE_HEADERS_AS_JSON.rawPath()) { exchange ->
+          controller(CAPTURE_HEADERS_AS_JSON) {
+            exchange.setStatusCode(StatusCodes.OK)
+            exchange.getResponseSender().send(CAPTURE_HEADERS_AS_JSON.body)
           }
         }
         .addExactPath(ERROR.rawPath()) { exchange ->
@@ -154,6 +166,8 @@ class UndertowServerTest extends HttpServerTest<Undertow> implements AgentTestTr
             "$SemanticAttributes.NET_SOCK_PEER_ADDR" "127.0.0.1"
             "$SemanticAttributes.NET_SOCK_PEER_PORT" Long
             "$SemanticAttributes.NET_SOCK_HOST_ADDR" "127.0.0.1"
+            "http.request.headers" { it != null }
+            "http.response.headers" { it != null }
           }
         }
         span(1) {
@@ -208,6 +222,8 @@ class UndertowServerTest extends HttpServerTest<Undertow> implements AgentTestTr
             "$SemanticAttributes.NET_SOCK_PEER_ADDR" "127.0.0.1"
             "$SemanticAttributes.NET_SOCK_PEER_PORT" Long
             "$SemanticAttributes.NET_SOCK_HOST_ADDR" "127.0.0.1"
+            "http.request.headers" { it != null }
+            "http.response.headers" { it != null }
           }
         }
         span(1) {
