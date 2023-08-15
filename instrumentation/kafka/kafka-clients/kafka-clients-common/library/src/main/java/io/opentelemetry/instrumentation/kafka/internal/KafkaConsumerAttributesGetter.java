@@ -84,4 +84,12 @@ public enum KafkaConsumerAttributesGetter
   public String messagePayload(ConsumerRecord<?, ?> consumerRecord) {
     return String.valueOf(consumerRecord.value());
   }
+
+  @Nullable
+  @Override
+  public Long messageQueueTime(ConsumerRecord<?, ?> consumerRecord) {
+    long now = System.currentTimeMillis();
+    long timestamp = consumerRecord.timestamp();
+    return now - timestamp;
+  }
 }
