@@ -65,4 +65,9 @@ public interface MessagingAttributesGetter<REQUEST, RESPONSE> {
   default String messagePayload(REQUEST request) {
     return null;
   }
+
+  @Nullable
+  default Long messageQueueTime(REQUEST request) {
+    return null;
+  }
 }

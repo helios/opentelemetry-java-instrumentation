@@ -37,6 +37,8 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
 
   public static final AttributeKey<String> MESSAGING_PAYLOAD =
       AttributeKey.stringKey("messaging.payload");
+  public static final AttributeKey<String> MESSAGING_QUEUE_TIME =
+      AttributeKey.stringKey("messaging.queue_time");
 
   /**
    * Creates the messaging attributes extractor for the given {@link MessageOperation operation}
@@ -104,6 +106,11 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
     String messagePayload = getter.messagePayload(request);
     if (messagePayload != null && messagePayload.length() <= HS_MAX_PAYLOAD_SIZE) {
       internalSet(attributes, MESSAGING_PAYLOAD, messagePayload);
+    }
+
+    Long messageQueueTime = getter.messageQueueTime(request);
+    if (messageQueueTime != null) {
+      internalSet(attributes, MESSAGING_QUEUE_TIME, messageQueueTime);
     }
   }
 
