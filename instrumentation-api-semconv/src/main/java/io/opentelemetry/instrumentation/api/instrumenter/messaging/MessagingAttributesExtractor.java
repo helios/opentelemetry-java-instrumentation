@@ -34,8 +34,8 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
 
   public static final AttributeKey<String> MESSAGING_PAYLOAD =
       AttributeKey.stringKey("messaging.payload");
-  public static final AttributeKey<String> MESSAGING_QUEUE_TIME =
-      AttributeKey.stringKey("messaging.queue_time");
+  public static final AttributeKey<Long> MESSAGING_QUEUE_TIME =
+      AttributeKey.longKey("messaging.queue_time");
 
   /**
    * Creates the messaging attributes extractor for the given {@link MessageOperation operation}.
