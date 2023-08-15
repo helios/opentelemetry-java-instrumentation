@@ -88,7 +88,8 @@ public enum KafkaConsumerAttributesGetter
   @Nullable
   @Override
   public Long messageQueueTime(ConsumerRecord<?, ?> consumerRecord) {
+    long now = System.currentTimeMillis();
     long timestamp = consumerRecord.timestamp();
-    return timestamp; // TODO calculate time diff
+    return now - timestamp;
   }
 }
