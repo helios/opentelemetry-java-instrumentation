@@ -95,6 +95,7 @@ class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
               "messaging.header.test_message_header" { it == ["test"] }
             }
             "messaging.payload" greeting
+            "messaging.queue_time" { it >= 0 }
           }
         }
         span(3) {

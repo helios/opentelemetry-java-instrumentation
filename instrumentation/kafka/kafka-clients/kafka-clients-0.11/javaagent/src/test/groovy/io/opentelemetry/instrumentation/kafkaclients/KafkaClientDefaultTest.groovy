@@ -115,6 +115,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
               "messaging.header.test_message_header" { it == ["test"] }
             }
             "messaging.payload" greeting
+            "messaging.queue_time" { it >= 0 }
           }
         }
         span(2) {
@@ -192,6 +193,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" String
+            "messaging.queue_time" { it >= 0 }
           }
         }
       }
@@ -270,6 +272,7 @@ class KafkaClientDefaultTest extends KafkaClientPropagationBaseTest {
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" greeting
+            "messaging.queue_time" { it >= 0 }
           }
         }
       }

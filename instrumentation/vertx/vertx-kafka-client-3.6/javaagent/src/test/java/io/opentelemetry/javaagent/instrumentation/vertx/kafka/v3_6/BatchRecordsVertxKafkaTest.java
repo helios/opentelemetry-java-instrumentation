@@ -133,7 +133,10 @@ class BatchRecordsVertxKafkaTest extends AbstractVertxKafkaTest {
                             satisfies(
                                 longKey("kafka.record.queue_time_ms"),
                                 AbstractLongAssert::isNotNegative),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan1")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan1"),
+                            satisfies(
+                                longKey("messaging.queue_time"),
+                                AbstractLongAssert::isNotNegative)),
                 span -> span.hasName("process testSpan1").hasParent(trace.getSpan(3)),
 
                 // single consumer 2
@@ -157,7 +160,10 @@ class BatchRecordsVertxKafkaTest extends AbstractVertxKafkaTest {
                             satisfies(
                                 longKey("kafka.record.queue_time_ms"),
                                 AbstractLongAssert::isNotNegative),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan2")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan2"),
+                            satisfies(
+                                longKey("messaging.queue_time"),
+                                AbstractLongAssert::isNotNegative)),
                 span -> span.hasName("process testSpan2").hasParent(trace.getSpan(5))));
   }
 
@@ -237,7 +243,10 @@ class BatchRecordsVertxKafkaTest extends AbstractVertxKafkaTest {
                             satisfies(
                                 longKey("kafka.record.queue_time_ms"),
                                 AbstractLongAssert::isNotNegative),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "error")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
+                            satisfies(
+                                longKey("messaging.queue_time"),
+                                AbstractLongAssert::isNotNegative)),
                 span -> span.hasName("process error").hasParent(trace.getSpan(3))));
   }
 }
