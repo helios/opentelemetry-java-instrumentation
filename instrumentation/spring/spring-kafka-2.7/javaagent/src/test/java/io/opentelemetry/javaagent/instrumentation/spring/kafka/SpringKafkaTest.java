@@ -105,7 +105,10 @@ class SpringKafkaTest extends AbstractSpringKafkaTest {
                             satisfies(
                                 longKey("kafka.record.queue_time_ms"),
                                 AbstractLongAssert::isNotNegative),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan"),
+                            satisfies(
+                                longKey("messaging.queue_time"),
+                                AbstractLongAssert::isNotNegative)),
                 span -> span.hasName("consumer").hasParent(trace.getSpan(1))));
   }
 
@@ -173,7 +176,10 @@ class SpringKafkaTest extends AbstractSpringKafkaTest {
                             satisfies(
                                 longKey("kafka.record.queue_time_ms"),
                                 AbstractLongAssert::isNotNegative),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "error")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
+                            satisfies(
+                                longKey("messaging.queue_time"),
+                                AbstractLongAssert::isNotNegative)),
                 span -> span.hasName("consumer").hasParent(trace.getSpan(1))));
   }
 
