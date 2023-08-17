@@ -82,6 +82,7 @@ class WrappersTest extends KafkaClientBaseTest implements LibraryTestTrait {
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" greeting
+            "messaging.queue_time" { it >= 0 }
           }
         }
         span(3) {
