@@ -88,7 +88,10 @@ class NoReceiveTelemetryBatchRecordsVertxKafkaTest extends AbstractVertxKafkaTes
                           satisfies(
                               SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                               AbstractLongAssert::isNotNegative),
-                          equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan1")),
+                          equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan1"),
+                          satisfies(
+                              AttributeKey.longKey("messaging.queue_time"),
+                              AbstractLongAssert::isNotNegative)),
               span -> span.hasName("process testSpan1").hasParent(trace.getSpan(2)),
 
               // second record
@@ -116,7 +119,10 @@ class NoReceiveTelemetryBatchRecordsVertxKafkaTest extends AbstractVertxKafkaTes
                           satisfies(
                               SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                               AbstractLongAssert::isNotNegative),
-                          equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan2")),
+                          equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan2"),
+                          satisfies(
+                              AttributeKey.longKey("messaging.queue_time"),
+                              AbstractLongAssert::isNotNegative)),
               span -> span.hasName("process testSpan2").hasParent(trace.getSpan(5)));
 
           producer1.set(trace.getSpan(1));
@@ -181,7 +187,10 @@ class NoReceiveTelemetryBatchRecordsVertxKafkaTest extends AbstractVertxKafkaTes
                           satisfies(
                               SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                               AbstractLongAssert::isNotNegative),
-                          equalTo(AttributeKey.stringKey("messaging.payload"), "error")),
+                          equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
+                          satisfies(
+                              AttributeKey.longKey("messaging.queue_time"),
+                              AbstractLongAssert::isNotNegative)),
               span -> span.hasName("process error").hasParent(trace.getSpan(2)));
 
           producer.set(trace.getSpan(1));

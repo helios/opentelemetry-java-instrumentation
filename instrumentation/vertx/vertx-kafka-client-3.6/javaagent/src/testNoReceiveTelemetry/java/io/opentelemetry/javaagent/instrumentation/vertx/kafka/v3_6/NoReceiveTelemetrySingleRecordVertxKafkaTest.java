@@ -79,7 +79,10 @@ class NoReceiveTelemetrySingleRecordVertxKafkaTest extends AbstractVertxKafkaTes
                             satisfies(
                                 SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                 AbstractLongAssert::isNotNegative),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "testSpan"),
+                            satisfies(
+                                AttributeKey.longKey("messaging.queue_time"),
+                                AbstractLongAssert::isNotNegative)),
                 span -> span.hasName("consumer").hasParent(trace.getSpan(2))));
   }
 
@@ -126,7 +129,10 @@ class NoReceiveTelemetrySingleRecordVertxKafkaTest extends AbstractVertxKafkaTes
                             satisfies(
                                 SemanticAttributes.MESSAGING_KAFKA_PARTITION,
                                 AbstractLongAssert::isNotNegative),
-                            equalTo(AttributeKey.stringKey("messaging.payload"), "error")),
+                            equalTo(AttributeKey.stringKey("messaging.payload"), "error"),
+                            satisfies(
+                                AttributeKey.longKey("messaging.queue_time"),
+                                AbstractLongAssert::isNotNegative)),
                 span -> span.hasName("consumer").hasParent(trace.getSpan(2))));
   }
 }
