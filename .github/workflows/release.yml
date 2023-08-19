@@ -92,7 +92,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Gradle build
-        run: ./gradlew build -x :instrumentation:aws-sdk:aws-sdk-1.11:javaagent:test -x :instrumentation:vaadin-14.2:javaagent:vaadin142Test -x :instrumentation:vaadin-14.2:javaagent:vaadin16Test
+        run: ./gradlew build -x :instrumentation:finatra-2.9:javaagent:test -x :instrumentation:hibernate:hibernate-4.0:javaagent:compileLatestDepTestJava -x :instrumentation:hibernate:hibernate-4.0:javaagent:compileLatestDepTestGroovy -x :instrumentation:play:play-mvc:play-mvc-2.6:javaagent:test -x :instrumentation:aws-sdk:aws-sdk-1.11:javaagent:test -x :instrumentation:vaadin-14.2:javaagent:vaadin142Test -x :instrumentation:vaadin-14.2:javaagent:vaadin16Test
 
       - id: create-github-release
         name: Create GitHub release
