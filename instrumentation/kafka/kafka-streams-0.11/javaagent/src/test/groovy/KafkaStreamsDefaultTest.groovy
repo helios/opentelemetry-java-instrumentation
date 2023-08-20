@@ -136,7 +136,7 @@ class KafkaStreamsDefaultTest extends KafkaStreamsBaseTest {
             "kafka.record.queue_time_ms" { it >= 0 }
             "asdf" "testing"
             "messaging.payload" greeting
-            "messaging.queue_time" Long
+            "messaging.queue_time" { it >= 0 }
           }
         }
         // kafka-clients PRODUCER
@@ -184,7 +184,7 @@ class KafkaStreamsDefaultTest extends KafkaStreamsBaseTest {
             "kafka.record.queue_time_ms" { it >= 0 }
             "testing" 123
             "messaging.payload" greeting.toLowerCase()
-            "messaging.queue_time" Long
+            "messaging.queue_time" { it >= 0 }
           }
         }
       }

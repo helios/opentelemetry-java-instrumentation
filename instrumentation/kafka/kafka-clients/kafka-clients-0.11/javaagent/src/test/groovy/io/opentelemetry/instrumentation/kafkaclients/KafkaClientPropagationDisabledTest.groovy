@@ -77,6 +77,7 @@ class KafkaClientPropagationDisabledTest extends KafkaClientPropagationBaseTest 
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" message
+            "messaging.queue_time" { it >= 0 }
           }
           span(1) {
             name "processing"

@@ -73,6 +73,7 @@ class KafkaClientSuppressReceiveSpansTest extends KafkaClientPropagationBaseTest
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" greeting
+            "messaging.queue_time" { it >= 0 }
           }
         }
         span(3) {
@@ -130,6 +131,7 @@ class KafkaClientSuppressReceiveSpansTest extends KafkaClientPropagationBaseTest
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" String
+            "messaging.queue_time" { it >= 0 }
           }
         }
       }
@@ -185,6 +187,7 @@ class KafkaClientSuppressReceiveSpansTest extends KafkaClientPropagationBaseTest
             "kafka.offset" Long
             "kafka.record.queue_time_ms" { it >= 0 }
             "messaging.payload" greeting
+            "messaging.queue_time" { it >= 0 }
           }
         }
       }
