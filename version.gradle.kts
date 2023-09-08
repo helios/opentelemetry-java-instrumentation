@@ -1,4 +1,4 @@
-val stableVersion = "1.0.5"
+val stableVersion = "1.0.6"
 val alphaVersion = "1.17.1-alpha-SNAPSHOT"
 
 allprojects {
