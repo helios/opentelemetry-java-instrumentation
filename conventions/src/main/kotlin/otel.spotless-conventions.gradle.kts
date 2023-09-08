@@ -7,19 +7,12 @@ plugins {
 spotless {
   java {
     googleJavaFormat()
-    licenseHeaderFile(rootProject.file("buildscripts/spotless.license.java"), "(package|import|public|// Includes work from:)")
     toggleOffOn()
     target("src/**/*.java")
-  }
-  plugins.withId("groovy") {
-    groovy {
-      licenseHeaderFile(rootProject.file("buildscripts/spotless.license.java"), "(package|import|class)")
-    }
   }
   plugins.withId("scala") {
     scala {
       scalafmt()
-      licenseHeaderFile(rootProject.file("buildscripts/spotless.license.java"), "(package|import|public)")
       target("src/**/*.scala")
     }
   }
@@ -27,7 +20,6 @@ spotless {
     kotlin {
       ktlint().userData(mapOf("continuation_indent_size" to "2", "disabled_rules" to "no-wildcard-imports"))
         .editorConfigOverride(mapOf("indent_size" to "2")) // not sure why it's not using the setting from .editorconfig
-      licenseHeaderFile(rootProject.file("buildscripts/spotless.license.java"), "(package|import|class|// Includes work from:)")
     }
   }
   kotlinGradle {

@@ -7,7 +7,6 @@ plugins {
 spotless {
   java {
     googleJavaFormat()
-    licenseHeaderFile(rootProject.file("../buildscripts/spotless.license.java"), "(package|import|public)")
     target("src/**/*.java")
   }
   kotlinGradle {
