@@ -1,8 +1,3 @@
-/*
- * Copyright The OpenTelemetry Authors
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.opentelemetry.javaagent.instrumentation.demo;
 
 import static java.util.Collections.singletonList;
