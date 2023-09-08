@@ -147,7 +147,6 @@ include(":instrumentation:methods:javaax3gent")
 include(":instrumentation:opentelemetry-api:opentelemetry-api-1.0:javaagent")
 include(":instrumentation:opentelemetry-api:opentelemetry-api-1.4:javaagent")
 include(":instrumentation:opentelemetry-api:opentelemetry-api-1.10:javaagent")
-include(":instrumentation:opentelemetry-instrumentation-annotations-1.16:javaagent")
 include(":instrumentation:opentelemetry-instrumentation-api:javaagent")
 include(":instrumentation:opentelemetry-instrumentation-api:testing")
 
