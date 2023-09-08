@@ -25,7 +25,7 @@ public class DemoInstrumentation implements TypeInstrumentation {
   public static class Hook {
     @Advice.OnMethodEnter
     public static void enter() {
-      System.out.println("OnMethodEnter!!!!");
+      System.out.println("OnMethodEnter!!!!1");
     }
 
     @Advice.OnMethodExit

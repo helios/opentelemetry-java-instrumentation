@@ -66,7 +66,6 @@ dependencies {
   testImplementation(project(":javaagent-tooling"))
   testImplementation(project(":javaagent-bootstrap"))
   testImplementation(project(":javaagent-extension-api"))
-  testImplementation(project(":instrumentation:external-annotations:javaagent"))
 
   // We have autoservices defined in test subtree, looks like we need this to be able to properly rebuild this
   testAnnotationProcessor("com.google.auto.service:auto-service")
