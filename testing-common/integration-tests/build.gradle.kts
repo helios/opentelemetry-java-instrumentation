@@ -14,7 +14,6 @@ dependencies {
   testImplementation("net.bytebuddy:byte-buddy-agent")
 
   testImplementation("com.google.guava:guava")
-  testImplementation("io.opentelemetry:opentelemetry-extension-annotations")
 
   testImplementation("cglib:cglib:3.2.5")
 

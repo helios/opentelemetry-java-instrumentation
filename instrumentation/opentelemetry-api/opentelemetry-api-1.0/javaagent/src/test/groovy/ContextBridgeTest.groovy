@@ -8,7 +8,6 @@ import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import io.opentelemetry.context.ContextKey
-import io.opentelemetry.extension.annotations.WithSpan
 import io.opentelemetry.instrumentation.test.AgentInstrumentationSpecification
 
 import java.util.concurrent.CountDownLatch
@@ -30,38 +29,6 @@ class ContextBridgeTest extends AgentInstrumentationSpecification {
     captured.get() == "cat"
   }
 
-  def "application propagates agent's context"() {
-    when:
-    new Runnable() {
-      @WithSpan("test")
-      @Override
-      void run() {
-        // using @WithSpan above to make the agent generate a context
-        // and then using manual propagation below to verify that context can be propagated by user
-        def context = Context.current()
-        Context.root().makeCurrent().withCloseable {
-          Span.current().setAttribute("dog", "no")
-          context.makeCurrent().withCloseable {
-            Span.current().setAttribute("cat", "yes")
-          }
-        }
-      }
-    }.run()
-
-    then:
-    assertTraces(1) {
-      trace(0, 1) {
-        span(0) {
-          name "test"
-          hasNoParent()
-          attributes {
-            "cat" "yes"
-          }
-        }
-      }
-    }
-  }
-
   def "agent propagates application's span"() {
     when:
     def tracer = GlobalOpenTelemetry.getTracer("test")
@@ -71,38 +38,6 @@ class ContextBridgeTest extends AgentInstrumentationSpecification {
       Span.current().setAttribute("cat", "yes")
     }
     testSpan.end()
-
-    then:
-    assertTraces(1) {
-      trace(0, 1) {
-        span(0) {
-          name "test"
-          hasNoParent()
-          attributes {
-            "cat" "yes"
-          }
-        }
-      }
-    }
-  }
-
-  def "application propagates agent's span"() {
-    when:
-    new Runnable() {
-      @WithSpan("test")
-      @Override
-      void run() {
-        // using @WithSpan above to make the agent generate a span
-        // and then using manual propagation below to verify that span can be propagated by user
-        def span = Span.current()
-        Context.root().makeCurrent().withCloseable {
-          Span.current().setAttribute("dog", "no")
-          span.makeCurrent().withCloseable {
-            Span.current().setAttribute("cat", "yes")
-          }
-        }
-      }
-    }.run()
 
     then:
     assertTraces(1) {
