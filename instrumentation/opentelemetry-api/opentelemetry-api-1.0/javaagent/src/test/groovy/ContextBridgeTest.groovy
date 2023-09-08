@@ -12,7 +12,6 @@ import io.opentelemetry.extension.annotations.WithSpan
 import io.opentelemetry.instrumentation.test.AgentInstrumentationSpecification
 
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 
 class ContextBridgeTest extends AgentInstrumentationSpecification {
@@ -24,9 +23,7 @@ class ContextBridgeTest extends AgentInstrumentationSpecification {
     def context = Context.current().with(ANIMAL, "cat")
     def captured = new AtomicReference<String>()
     context.makeCurrent().withCloseable {
-      Executors.newSingleThreadExecutor().submit({
-        captured.set(Context.current().get(ANIMAL))
-      }).get()
+      captured.set(Context.current().get(ANIMAL))
     }
 
     then:
@@ -71,9 +68,7 @@ class ContextBridgeTest extends AgentInstrumentationSpecification {
 
     def testSpan = tracer.spanBuilder("test").startSpan()
     testSpan.makeCurrent().withCloseable {
-      Executors.newSingleThreadExecutor().submit({
-        Span.current().setAttribute("cat", "yes")
-      }).get()
+      Span.current().setAttribute("cat", "yes")
     }
     testSpan.end()
 
@@ -129,10 +124,8 @@ class ContextBridgeTest extends AgentInstrumentationSpecification {
     def ref = new AtomicReference<Baggage>()
     def latch = new CountDownLatch(1)
     testBaggage.makeCurrent().withCloseable {
-      Executors.newSingleThreadExecutor().submit({
-        ref.set(Baggage.current())
-        latch.countDown()
-      }).get()
+      ref.set(Baggage.current())
+      latch.countDown()
     }
 
     then:

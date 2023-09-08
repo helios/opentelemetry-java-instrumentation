@@ -70,7 +70,6 @@ dependencies {
   baseJavaagentLibs(project(":instrumentation:opentelemetry-api:opentelemetry-api-1.0:javaagent"))
   baseJavaagentLibs(project(":instrumentation:opentelemetry-api:opentelemetry-api-1.4:javaagent"))
   baseJavaagentLibs(project(":instrumentation:opentelemetry-instrumentation-api:javaagent"))
-  baseJavaagentLibs(project(":instrumentation:executors:javaagent"))
   baseJavaagentLibs(project(":instrumentation:internal:internal-class-loader:javaagent"))
   baseJavaagentLibs(project(":instrumentation:internal:internal-eclipse-osgi-3.6:javaagent"))
   baseJavaagentLibs(project(":instrumentation:internal:internal-lambda:javaagent"))
