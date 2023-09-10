@@ -109,7 +109,6 @@ include(":instrumentation-api")
 include(":instrumentation-api-semconv")
 include(":instrumentation-appender-api-internal")
 include(":instrumentation-appender-sdk-internal")
-include(":instrumentation-annotations")
 include(":instrumentation-annotations-support")
 include(":instrumentation-annotations-support-testing")
 
